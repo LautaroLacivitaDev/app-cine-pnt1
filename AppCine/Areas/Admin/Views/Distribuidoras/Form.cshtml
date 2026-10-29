@@ -1,0 +1,19 @@
+@model Distribuidora
+@{
+    ViewData["Title"] = Model.Id == 0 ? "Nueva distribuidora" : "Editar distribuidora";
+}
+
+<h1 class="h3">@ViewData["Title"]</h1>
+<form method="post" class="col-lg-6">
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+    <div class="mb-3">
+        <label asp-for="RazonSocial" class="form-label"></label>
+        <input asp-for="RazonSocial" class="form-control" />
+        <span asp-validation-for="RazonSocial" class="text-danger"></span>
+    </div>
+    <partial name="_Botones" />
+</form>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

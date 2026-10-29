@@ -1,0 +1,30 @@
+@{
+    ViewData["Title"] = "Administración";
+    (string Controlador, string Titulo, string Descripcion)[] secciones =
+    [
+        ("Peliculas", "Películas", "Con sus géneros y su reparto"),
+        ("Funciones", "Funciones", "Horarios por sala, con las reglas de negocio"),
+        ("Sedes", "Sedes", "Complejos de cines"),
+        ("Salas", "Salas", "Salas de cada sede"),
+        ("Actores", "Actores", "Personas que actúan"),
+        ("Directores", "Directores", "Personas que dirigen"),
+        ("Generos", "Géneros", "Categorías de películas"),
+        ("Distribuidoras", "Distribuidoras", "Empresas que distribuyen"),
+        ("Usuarios", "Usuarios", "Clientes y administradores")
+    ];
+}
+
+<h1 class="h3 mb-3">Administración</h1>
+<div class="row g-3">
+    @foreach (var s in secciones)
+    {
+        <div class="col-12 col-sm-6 col-lg-4">
+            <a asp-controller="@s.Controlador" asp-action="Index" class="card h-100 text-decoration-none">
+                <div class="card-body">
+                    <h2 class="h5 card-title">@s.Titulo</h2>
+                    <p class="card-text text-muted small mb-0">@s.Descripcion</p>
+                </div>
+            </a>
+        </div>
+    }
+</div>

@@ -1,0 +1,8 @@
+@model Fila
+
+<div class="d-flex gap-2 justify-content-end flex-shrink-0">
+    <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-sm btn-outline-primary">Editar</a>
+    <form asp-action="Delete" asp-route-id="@Model.Id" method="post" data-confirmar="¿Eliminar «@Model.Nombre»?">
+        <button type="submit" class="btn btn-sm btn-outline-danger">Eliminar</button>
+    </form>
+</div>

@@ -1,0 +1,47 @@
+@model Usuario
+@{
+    ViewData["Title"] = Model.Id == 0 ? "Nuevo usuario" : "Editar usuario";
+}
+
+<h1 class="h3">@ViewData["Title"]</h1>
+<form method="post" class="col-lg-6">
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+    <div class="mb-3">
+        <label asp-for="Nombre" class="form-label"></label>
+        <input asp-for="Nombre" class="form-control" autocomplete="off" />
+        <span asp-validation-for="Nombre" class="text-danger"></span>
+    </div>
+    <div class="mb-3">
+        <label asp-for="Apellido" class="form-label"></label>
+        <input asp-for="Apellido" class="form-control" autocomplete="off" />
+        <span asp-validation-for="Apellido" class="text-danger"></span>
+    </div>
+    <div class="mb-3">
+        <label asp-for="Email" class="form-label"></label>
+        <input asp-for="Email" class="form-control" inputmode="email" autocomplete="off" />
+        <span asp-validation-for="Email" class="text-danger"></span>
+    </div>
+    <div class="mb-3">
+        <label asp-for="FechaNacimiento" class="form-label"></label>
+        <input asp-for="FechaNacimiento" class="form-control" />
+        <span asp-validation-for="FechaNacimiento" class="text-danger"></span>
+    </div>
+    <div class="mb-3">
+        <label asp-for="Telefono" class="form-label"></label>
+        <input asp-for="Telefono" class="form-control" inputmode="tel" autocomplete="off" />
+        <span asp-validation-for="Telefono" class="text-danger"></span>
+    </div>
+    <div class="mb-3">
+        <label asp-for="Genero" class="form-label"></label>
+        <select asp-for="Genero" asp-items="Html.GetEnumSelectList<GeneroPersona>()" class="form-select"></select>
+    </div>
+    <div class="form-check mb-3">
+        <input asp-for="EsAdmin" class="form-check-input" />
+        <label asp-for="EsAdmin" class="form-check-label"></label>
+    </div>
+    <partial name="_Botones" />
+</form>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

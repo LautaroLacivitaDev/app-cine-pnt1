@@ -1,0 +1,49 @@
+html {
+  position: relative;
+  min-height: 100%;
+  font-size: 16px;
+}
+
+body {
+  margin-bottom: 60px;
+}
+
+.btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
+  box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
+}
+
+/* Pensado primero para el celular: zonas tocables de al menos 44 px. */
+.btn, .form-control, .form-select, .nav-link {
+  min-height: 44px;
+}
+
+.btn-sm {
+  min-height: 36px;
+}
+
+.poster {
+  width: 100%;
+  aspect-ratio: 2 / 3;
+  object-fit: cover;
+  background: #1f2937;
+}
+
+.poster-chico {
+  width: 96px;
+  flex-shrink: 0;
+}
+
+.dias {
+  display: flex;
+  gap: .5rem;
+  overflow-x: auto;
+  padding-bottom: .25rem;
+}
+
+.dias .btn {
+  white-space: nowrap;
+}
+
+.horario {
+  font-variant-numeric: tabular-nums;
+}

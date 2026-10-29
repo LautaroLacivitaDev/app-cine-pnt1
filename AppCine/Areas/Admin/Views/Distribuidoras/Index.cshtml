@@ -1,0 +1,15 @@
+@model List<Distribuidora>
+@{
+    ViewData["Title"] = "Distribuidoras";
+}
+
+<partial name="_Encabezado" />
+<ul class="list-group">
+    @foreach (var d in Model)
+    {
+        <li class="list-group-item d-flex justify-content-between align-items-center gap-2">
+            <span>@d.RazonSocial</span>
+            <partial name="_Acciones" model="new Fila(d.Id, d.RazonSocial)" />
+        </li>
+    }
+</ul>

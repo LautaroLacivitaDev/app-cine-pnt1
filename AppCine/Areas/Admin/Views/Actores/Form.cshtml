@@ -1,0 +1,10 @@
+@model Actor
+@{
+    ViewData["Title"] = Model.Id == 0 ? "Nuevo actor" : "Editar actor";
+}
+
+<partial name="_FormPersona" model="Model" />
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
