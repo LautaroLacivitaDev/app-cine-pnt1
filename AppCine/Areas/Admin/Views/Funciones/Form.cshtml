@@ -1,0 +1,57 @@
+@model Funcion
+@{
+    ViewData["Title"] = Model.Id == 0 ? "Nueva función" : "Editar función";
+}
+
+<h1 class="h3">@ViewData["Title"]</h1>
+<p class="text-muted small">
+    No se puede cargar en el pasado, el 3D solo va en salas preparadas y la función no puede pisar a otra de la
+    misma sala (se suman @Funcion.MinutosLimpieza minutos de limpieza).
+</p>
+<form method="post" class="col-lg-6">
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+    <div class="mb-3">
+        <label asp-for="PeliculaId" class="form-label"></label>
+        <select asp-for="PeliculaId" asp-items="ViewBag.Peliculas" class="form-select">
+            <option value="0">Elegí una película</option>
+        </select>
+        <span asp-validation-for="PeliculaId" class="text-danger"></span>
+    </div>
+    <div class="mb-3">
+        <label asp-for="SalaId" class="form-label"></label>
+        <select asp-for="SalaId" asp-items="ViewBag.Salas" class="form-select">
+            <option value="0">Elegí una sala</option>
+        </select>
+        <span asp-validation-for="SalaId" class="text-danger"></span>
+    </div>
+    <div class="mb-3">
+        <label asp-for="FechaHora" class="form-label"></label>
+        <input asp-for="FechaHora" class="form-control" type="datetime-local" value="@Model.FechaHora.ToString("yyyy-MM-ddTHH:mm")" />
+        <span asp-validation-for="FechaHora" class="text-danger"></span>
+    </div>
+    <div class="row g-2 mb-3">
+        <div class="col-6">
+            <label asp-for="Formato" class="form-label"></label>
+            <select asp-for="Formato" asp-items="Html.GetEnumSelectList<Formato>()" class="form-select"></select>
+            <span asp-validation-for="Formato" class="text-danger"></span>
+        </div>
+        <div class="col-6">
+            <label asp-for="Idioma" class="form-label"></label>
+            <select asp-for="Idioma" asp-items="Html.GetEnumSelectList<Idioma>()" class="form-select"></select>
+        </div>
+    </div>
+    <div class="form-check mb-3">
+        <input asp-for="Subtitulada" class="form-check-input" />
+        <label asp-for="Subtitulada" class="form-check-label"></label>
+    </div>
+    <div class="mb-3">
+        <label asp-for="Precio" class="form-label"></label>
+        <input asp-for="Precio" class="form-control" type="number" inputmode="decimal" step="0.01" />
+        <span asp-validation-for="Precio" class="text-danger"></span>
+    </div>
+    <partial name="_Botones" />
+</form>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

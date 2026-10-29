@@ -1,0 +1,42 @@
+@model Sala
+@{
+    ViewData["Title"] = Model.Id == 0 ? "Nueva sala" : "Editar sala";
+}
+
+<h1 class="h3">@ViewData["Title"]</h1>
+<form method="post" class="col-lg-6">
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+    <div class="mb-3">
+        <label asp-for="SedeId" class="form-label"></label>
+        <select asp-for="SedeId" asp-items="ViewBag.Sedes" class="form-select">
+            <option value="0">Elegí una sede</option>
+        </select>
+        <span asp-validation-for="SedeId" class="text-danger"></span>
+    </div>
+    <div class="mb-3">
+        <label asp-for="Nombre" class="form-label"></label>
+        <input asp-for="Nombre" class="form-control" />
+        <span asp-validation-for="Nombre" class="text-danger"></span>
+    </div>
+    <div class="row g-2 mb-3">
+        <div class="col-6">
+            <label asp-for="CantidadFilas" class="form-label"></label>
+            <input asp-for="CantidadFilas" class="form-control" type="number" inputmode="numeric" />
+            <span asp-validation-for="CantidadFilas" class="text-danger"></span>
+        </div>
+        <div class="col-6">
+            <label asp-for="ButacasPorFila" class="form-label"></label>
+            <input asp-for="ButacasPorFila" class="form-control" type="number" inputmode="numeric" />
+            <span asp-validation-for="ButacasPorFila" class="text-danger"></span>
+        </div>
+    </div>
+    <div class="form-check mb-3">
+        <input asp-for="Soporta3D" class="form-check-input" />
+        <label asp-for="Soporta3D" class="form-check-label"></label>
+    </div>
+    <partial name="_Botones" />
+</form>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

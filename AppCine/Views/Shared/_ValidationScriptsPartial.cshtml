@@ -1,0 +1,14 @@
+﻿<script src="~/lib/jquery-validation/dist/jquery.validate.min.js"></script>
+<script src="~/lib/jquery-validation-unobtrusive/dist/jquery.validate.unobtrusive.min.js"></script>
+<script>
+    // Mensajes propios de jQuery Validation en español (los de Data Annotations ya vienen del servidor).
+    $.extend($.validator.messages, {
+        required: 'Este campo es obligatorio.',
+        number: 'Ingresá un número válido.',
+        digits: 'Ingresá solo dígitos.',
+        url: 'Ingresá una URL válida.',
+        email: 'Ingresá un correo válido.',
+        date: 'Ingresá una fecha válida.',
+        step: 'Ingresá un valor válido.'
+    });
+</script>

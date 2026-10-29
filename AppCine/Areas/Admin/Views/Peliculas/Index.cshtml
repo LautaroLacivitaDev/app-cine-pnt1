@@ -1,0 +1,20 @@
+@model List<Pelicula>
+@{
+    ViewData["Title"] = "Películas";
+}
+
+<partial name="_Encabezado" />
+<ul class="list-group">
+    @foreach (var p in Model)
+    {
+        <li class="list-group-item d-flex justify-content-between align-items-center gap-2">
+            <span>
+                <strong>@p.Titulo</strong> <span class="badge text-bg-secondary">@p.Clasificacion.Texto()</span>
+                <span class="d-block small text-muted">
+                    @p.DuracionMinutos min · @p.Director?.NombreCompleto · @string.Join(", ", p.Generos.Select(g => g.Nombre))
+                </span>
+            </span>
+            <partial name="_Acciones" model="new Fila(p.Id, p.Titulo)" />
+        </li>
+    }
+</ul>

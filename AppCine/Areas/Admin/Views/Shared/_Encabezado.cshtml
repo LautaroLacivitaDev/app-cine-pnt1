@@ -1,0 +1,6 @@
+@* Título del listado con el botón Nuevo y el vínculo de vuelta al panel. *@
+<a asp-controller="Inicio" asp-action="Index" class="btn btn-link px-0">← Administración</a>
+<div class="d-flex justify-content-between align-items-center mb-3 gap-2">
+    <h1 class="h3 mb-0">@ViewData["Title"]</h1>
+    <a asp-action="Create" class="btn btn-primary">Nuevo</a>
+</div>

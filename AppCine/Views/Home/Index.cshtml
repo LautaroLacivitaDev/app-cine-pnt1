@@ -1,0 +1,98 @@
+﻿@model CarteleraViewModel
+@{
+    ViewData["Title"] = "Cartelera";
+    var hoy = DateTime.Today;
+    string NombreDia(DateTime d) => d == hoy ? "Hoy" : d == hoy.AddDays(1) ? "Mañana" : d.ToString("ddd dd/MM");
+}
+
+<h1 class="h3 mb-3">Cartelera</h1>
+
+<form method="get" asp-action="Index" class="mb-4">
+    <input type="hidden" name="fecha" value="@Model.Fecha.ToString("yyyy-MM-dd")" />
+    <div class="dias mb-3" role="group" aria-label="Día">
+        @foreach (var d in Model.Dias)
+        {
+            <a class="btn @(d == Model.Fecha ? "btn-dark" : "btn-outline-dark")"
+               asp-action="Index" asp-route-fecha="@d.ToString("yyyy-MM-dd")" asp-route-sedeId="@Model.SedeId"
+               asp-route-generoId="@Model.GeneroId" asp-route-formato="@Model.Formato">@NombreDia(d)</a>
+        }
+    </div>
+    <div class="row g-2">
+        <div class="col-12 col-md-3">
+            <label class="form-label" for="sedeId">Sede</label>
+            <select class="form-select" id="sedeId" name="sedeId">
+                <option value="">Todas</option>
+                @foreach (var s in Model.Sedes)
+                {
+                    <option value="@s.Id" selected="@(s.Id == Model.SedeId)">@s.Nombre</option>
+                }
+            </select>
+        </div>
+        <div class="col-12 col-md-3">
+            <label class="form-label" for="generoId">Género</label>
+            <select class="form-select" id="generoId" name="generoId">
+                <option value="">Todos</option>
+                @foreach (var g in Model.Generos)
+                {
+                    <option value="@g.Id" selected="@(g.Id == Model.GeneroId)">@g.Nombre</option>
+                }
+            </select>
+        </div>
+        <div class="col-12 col-md-3">
+            <label class="form-label" for="formato">Formato</label>
+            <select class="form-select" id="formato" name="formato">
+                <option value="">Todos</option>
+                @foreach (var f in Enum.GetValues<Formato>())
+                {
+                    <option value="@f" selected="@(f == Model.Formato)">@f.Texto()</option>
+                }
+            </select>
+        </div>
+        <div class="col-12 col-md-3 d-flex align-items-end">
+            <button type="submit" class="btn btn-primary w-100">Filtrar</button>
+        </div>
+    </div>
+</form>
+
+@if (Model.Peliculas.Count == 0)
+{
+    <p class="text-muted">No hay funciones para @NombreDia(Model.Fecha).ToLower() con esos filtros.</p>
+}
+
+<div class="row g-3">
+    @foreach (var item in Model.Peliculas)
+    {
+        var p = item.Pelicula;
+        <div class="col-12 col-lg-6">
+            <div class="card h-100">
+                <div class="card-body d-flex gap-3">
+                    <a asp-controller="Peliculas" asp-action="Detalle" asp-route-id="@p.Id" class="poster-chico">
+                        <img class="poster rounded" src="@p.ImagenUrl" alt="Póster de @p.Titulo" loading="lazy" />
+                    </a>
+                    <div class="flex-grow-1">
+                        <h2 class="h5 mb-1">
+                            <a asp-controller="Peliculas" asp-action="Detalle" asp-route-id="@p.Id" class="text-decoration-none">@p.Titulo</a>
+                        </h2>
+                        <p class="small text-muted mb-2">
+                            <span class="badge text-bg-secondary">@p.Clasificacion.Texto()</span>
+                            @p.DuracionMinutos min · @string.Join(", ", p.Generos.Select(g => g.Nombre))
+                        </p>
+                        @foreach (var sede in item.FuncionesPorSede)
+                        {
+                            <div class="mb-2">
+                                <div class="small fw-semibold">@sede.Key.Nombre</div>
+                                <div class="d-flex flex-wrap gap-1">
+                                    @foreach (var f in sede)
+                                    {
+                                        <span class="badge text-bg-light border horario fs-6 fw-normal"
+                                              title="@f.Sala!.Nombre · @f.Idioma.Texto() · @f.Precio.ToString("C0")">@f.Etiqueta</span>
+                                    }
+                                </div>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+</div>

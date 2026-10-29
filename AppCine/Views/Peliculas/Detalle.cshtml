@@ -1,0 +1,74 @@
+@model Pelicula
+@{
+    ViewData["Title"] = Model.Titulo;
+    var funcionesPorSede = (List<IGrouping<Sede, Funcion>>)ViewBag.FuncionesPorSede;
+    var hoy = DateTime.Today;
+    string NombreDia(DateTime d) => d.Date == hoy ? "Hoy" : d.Date == hoy.AddDays(1) ? "Mañana" : d.ToString("ddd dd/MM");
+}
+
+<a asp-controller="Home" asp-action="Index" class="btn btn-link px-0 mb-2">← Volver a la cartelera</a>
+
+<div class="row g-4">
+    <div class="col-7 col-sm-5 col-md-4 col-lg-3 mx-auto mx-md-0">
+        <img class="poster rounded shadow-sm" src="@Model.ImagenUrl" alt="Póster de @Model.Titulo" />
+    </div>
+    <div class="col-12 col-md-8 col-lg-9">
+        <h1 class="h3">@Model.Titulo</h1>
+        <p class="text-muted">
+            <span class="badge text-bg-secondary">@Model.Clasificacion.Texto()</span>
+            @Model.DuracionMinutos min · Estreno @Model.FechaEstreno.ToString("dd/MM/yyyy")
+        </p>
+        <p>@Model.Descripcion</p>
+        <dl class="row">
+            <dt class="col-sm-3">Director</dt>
+            <dd class="col-sm-9">@Model.Director?.NombreCompleto</dd>
+            <dt class="col-sm-3">Géneros</dt>
+            <dd class="col-sm-9">@string.Join(", ", Model.Generos.Select(g => g.Nombre))</dd>
+            <dt class="col-sm-3">Distribuidora</dt>
+            <dd class="col-sm-9">@Model.Distribuidora?.RazonSocial</dd>
+        </dl>
+        @if (!string.IsNullOrEmpty(Model.TrailerUrl))
+        {
+            <a class="btn btn-danger mb-3" href="@Model.TrailerUrl" target="_blank" rel="noopener">▶ Ver tráiler</a>
+        }
+
+        <h2 class="h5 mt-3">Reparto</h2>
+        @if (Model.Repartos.Count == 0)
+        {
+            <p class="text-muted">Sin reparto cargado.</p>
+        }
+        else
+        {
+            <ul class="list-unstyled">
+                @foreach (var r in Model.Repartos.OrderBy(r => r.Id))
+                {
+                    <li><strong>@r.Actor!.NombreCompleto</strong> <span class="text-muted">como @r.Personaje</span></li>
+                }
+            </ul>
+        }
+
+        <h2 class="h5 mt-4">Horarios de la semana</h2>
+        @if (funcionesPorSede.Count == 0)
+        {
+            <p class="text-muted">No hay funciones programadas.</p>
+        }
+        @foreach (var sede in funcionesPorSede)
+        {
+            <div class="card mb-3">
+                <div class="card-header fw-semibold">@sede.Key.Nombre <span class="fw-normal text-muted small">· @sede.Key.Direccion</span></div>
+                <ul class="list-group list-group-flush">
+                    @foreach (var dia in sede.GroupBy(f => f.FechaHora.Date))
+                    {
+                        <li class="list-group-item d-flex flex-wrap align-items-center gap-1">
+                            <span class="me-2" style="min-width: 6rem">@NombreDia(dia.Key)</span>
+                            @foreach (var f in dia)
+                            {
+                                <span class="badge text-bg-light border horario fs-6 fw-normal text-nowrap">@f.Etiqueta</span>
+                            }
+                        </li>
+                    }
+                </ul>
+            </div>
+        }
+    </div>
+</div>

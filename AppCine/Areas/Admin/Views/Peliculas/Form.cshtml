@@ -1,0 +1,132 @@
+@model Pelicula
+@{
+    ViewData["Title"] = Model.Id == 0 ? "Nueva película" : "Editar película";
+    var generos = (List<Genero>)ViewBag.Generos;
+    var generoIds = (int[])ViewBag.GeneroIds;
+    var errorGeneros = ViewData.ModelState["generoIds"]?.Errors.FirstOrDefault()?.ErrorMessage;
+}
+
+<a asp-action="Index" class="btn btn-link px-0">← Películas</a>
+<h1 class="h3">@ViewData["Title"]</h1>
+<form method="post" class="col-lg-8">
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+    <div class="mb-3">
+        <label asp-for="Titulo" class="form-label"></label>
+        <input asp-for="Titulo" class="form-control" />
+        <span asp-validation-for="Titulo" class="text-danger"></span>
+    </div>
+    <div class="mb-3">
+        <label asp-for="Descripcion" class="form-label"></label>
+        <textarea asp-for="Descripcion" class="form-control" rows="4"></textarea>
+        <span asp-validation-for="Descripcion" class="text-danger"></span>
+    </div>
+    <div class="row g-2 mb-3">
+        <div class="col-6 col-md-4">
+            <label asp-for="DuracionMinutos" class="form-label"></label>
+            <input asp-for="DuracionMinutos" class="form-control" type="number" inputmode="numeric" />
+            <span asp-validation-for="DuracionMinutos" class="text-danger"></span>
+        </div>
+        <div class="col-6 col-md-4">
+            <label asp-for="Clasificacion" class="form-label"></label>
+            <select asp-for="Clasificacion" asp-items="Html.GetEnumSelectList<Clasificacion>()" class="form-select"></select>
+        </div>
+        <div class="col-12 col-md-4">
+            <label asp-for="FechaEstreno" class="form-label"></label>
+            <input asp-for="FechaEstreno" class="form-control" />
+            <span asp-validation-for="FechaEstreno" class="text-danger"></span>
+        </div>
+    </div>
+    <div class="row g-2 mb-3">
+        <div class="col-12 col-md-6">
+            <label asp-for="DirectorId" class="form-label"></label>
+            <select asp-for="DirectorId" asp-items="ViewBag.Directores" class="form-select">
+                <option value="0">Elegí un director</option>
+            </select>
+            <span asp-validation-for="DirectorId" class="text-danger"></span>
+        </div>
+        <div class="col-12 col-md-6">
+            <label asp-for="DistribuidoraId" class="form-label"></label>
+            <select asp-for="DistribuidoraId" asp-items="ViewBag.Distribuidoras" class="form-select">
+                <option value="0">Elegí una distribuidora</option>
+            </select>
+            <span asp-validation-for="DistribuidoraId" class="text-danger"></span>
+        </div>
+    </div>
+    <div class="mb-3">
+        <label asp-for="ImagenUrl" class="form-label"></label>
+        <input asp-for="ImagenUrl" class="form-control" inputmode="url" />
+        <span asp-validation-for="ImagenUrl" class="text-danger"></span>
+    </div>
+    <div class="mb-3">
+        <label asp-for="TrailerUrl" class="form-label"></label>
+        <input asp-for="TrailerUrl" class="form-control" inputmode="url" />
+        <span asp-validation-for="TrailerUrl" class="text-danger"></span>
+    </div>
+    <fieldset class="mb-3">
+        <legend class="form-label fs-6">Géneros</legend>
+        <div class="d-flex flex-wrap gap-3">
+            @foreach (var g in generos)
+            {
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" name="generoIds" value="@g.Id" id="genero-@g.Id"
+                           checked="@generoIds.Contains(g.Id)" />
+                    <label class="form-check-label" for="genero-@g.Id">@g.Nombre</label>
+                </div>
+            }
+        </div>
+        @if (errorGeneros is not null)
+        {
+            <span class="text-danger">@errorGeneros</span>
+        }
+    </fieldset>
+    <partial name="_Botones" />
+</form>
+
+@if (Model.Id != 0)
+{
+    <hr class="my-4" />
+    <section class="col-lg-8">
+        <h2 class="h4">Reparto</h2>
+        @if (TempData["ErrorReparto"] is string errorReparto)
+        {
+            <div class="alert alert-danger">@errorReparto</div>
+        }
+        <ul class="list-group mb-3">
+            @foreach (var r in Model.Repartos.OrderBy(r => r.Id))
+            {
+                <li class="list-group-item d-flex justify-content-between align-items-center gap-2">
+                    <span>@r.Actor?.NombreCompleto <span class="text-muted">como @r.Personaje</span></span>
+                    <form asp-action="QuitarReparto" asp-route-id="@Model.Id" method="post"
+                          data-confirmar="¿Quitar a @r.Actor?.NombreCompleto del reparto?">
+                        <input type="hidden" name="repartoId" value="@r.Id" />
+                        <button type="submit" class="btn btn-sm btn-outline-danger">Quitar</button>
+                    </form>
+                </li>
+            }
+            @if (Model.Repartos.Count == 0)
+            {
+                <li class="list-group-item text-muted">Todavía no hay reparto cargado.</li>
+            }
+        </ul>
+        <form asp-action="AgregarReparto" asp-route-id="@Model.Id" method="post" class="row g-2 align-items-end">
+            <div class="col-12 col-md-5">
+                <label class="form-label" for="ActorId">Actor</label>
+                <select id="ActorId" name="ActorId" asp-items="ViewBag.Actores" class="form-select">
+                    <option value="0">Elegí un actor</option>
+                </select>
+            </div>
+            <div class="col-12 col-md-5">
+                <label class="form-label" for="Personaje">Personaje</label>
+                <input id="Personaje" name="Personaje" class="form-control" maxlength="80" required />
+            </div>
+            <div class="col-12 col-md-2">
+                <button type="submit" class="btn btn-outline-primary w-100">Agregar</button>
+            </div>
+        </form>
+        <p class="small text-muted mt-2">¿Falta un actor? Cargalo en <a asp-controller="Actores" asp-action="Create">Actores</a>.</p>
+    </section>
+}
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

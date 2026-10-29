@@ -1,0 +1,22 @@
+@model List<Usuario>
+@{
+    ViewData["Title"] = "Usuarios";
+}
+
+<partial name="_Encabezado" />
+<ul class="list-group">
+    @foreach (var u in Model)
+    {
+        <li class="list-group-item d-flex justify-content-between align-items-center gap-2">
+            <span class="text-break">
+                <strong>@u.Apellido, @u.Nombre</strong>
+                @if (u.EsAdmin)
+                {
+                    <span class="badge text-bg-warning">Admin</span>
+                }
+                <span class="d-block small text-muted">@u.Email · @u.Edad años</span>
+            </span>
+            <partial name="_Acciones" model="new Fila(u.Id, u.NombreCompleto)" />
+        </li>
+    }
+</ul>
