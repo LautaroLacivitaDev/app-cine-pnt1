@@ -23,6 +23,12 @@
                         <li class="nav-item">
                             <a class="nav-link" asp-area="" asp-controller="Home" asp-action="Index">Cartelera</a>
                         </li>
+                        @if (User.Identity?.IsAuthenticated == true)
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link" asp-area="" asp-controller="Compras" asp-action="Index">Mis compras</a>
+                            </li>
+                        }
                         @if (User.IsInRole(Roles.Admin))
                         {
                             <li class="nav-item">
@@ -57,6 +63,13 @@
             {
                 <div class="alert alert-success alert-dismissible fade show" role="status">
                     @aviso
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
+                </div>
+            }
+            @if (TempData["Error"] is string error)
+            {
+                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                    @error
                     <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
                 </div>
             }

@@ -34,6 +34,15 @@ public enum GeneroPersona
 
 public static class EnumExtensions
 {
+    /// <summary>Edad mínima para comprar una entrada según la clasificación de la película.</summary>
+    public static int EdadMinima(this Clasificacion clasificacion) => clasificacion switch
+    {
+        Clasificacion.Mayores13 => 13,
+        Clasificacion.Mayores16 => 16,
+        Clasificacion.Mayores18 => 18,
+        _ => 0
+    };
+
     /// <summary>Texto para mostrar: el Display(Name) del valor o, si no tiene, su nombre.</summary>
     public static string Texto(this Enum valor) =>
         valor.GetType().GetField(valor.ToString())?.GetCustomAttribute<DisplayAttribute>()?.GetName()

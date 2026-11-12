@@ -2,6 +2,7 @@
 @{
     ViewData["Title"] = "Funciones";
     var pasadas = (bool)ViewBag.Pasadas;
+    var vendidas = (Dictionary<int, int>)ViewBag.Vendidas;
 }
 
 <partial name="_Encabezado" />
@@ -19,16 +20,22 @@
     <ul class="list-group">
         @foreach (var f in dia)
         {
+            var cantidad = vendidas.GetValueOrDefault(f.Id);
             <li class="list-group-item d-flex justify-content-between align-items-center gap-2">
                 <span>
                     <strong class="horario">@f.Etiqueta</strong> · @f.Pelicula!.Titulo
                     <span class="d-block small text-muted">
                         @f.Sala!.Sede!.Nombre · @f.Sala.Nombre · @f.Idioma.Texto() · @f.Precio.ToString("C0") · termina @f.HoraFin().ToString("HH:mm")
+                        · vendidas @cantidad/@f.Sala.Capacidad
                     </span>
                 </span>
-                @if (!pasadas)
+                @if (!pasadas && cantidad == 0)
                 {
                     <partial name="_Acciones" model="new Fila(f.Id, f.Pelicula.Titulo + ' ' + f.Etiqueta)" />
+                }
+                else if (!pasadas)
+                {
+                    <span class="badge text-bg-secondary" title="Con entradas vendidas no se puede editar ni eliminar">Con ventas</span>
                 }
             </li>
         }

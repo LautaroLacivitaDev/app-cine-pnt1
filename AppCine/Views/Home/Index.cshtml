@@ -84,8 +84,9 @@
                                 <div class="d-flex flex-wrap gap-1">
                                     @foreach (var f in sede)
                                     {
-                                        <span class="badge text-bg-light border horario fs-6 fw-normal"
-                                              title="@f.Sala!.Nombre · @f.Idioma.Texto() · @f.Precio.ToString("C0")">@f.Etiqueta</span>
+                                        <a asp-controller="Compras" asp-action="Nueva" asp-route-id="@f.Id"
+                                           class="badge text-bg-light border horario fs-6 fw-normal text-decoration-none"
+                                           title="Comprar entradas · @f.Sala!.Nombre · @f.Idioma.Texto() · @f.Precio.ToString("C0")">@f.Etiqueta</a>
                                     }
                                 </div>
                             </div>

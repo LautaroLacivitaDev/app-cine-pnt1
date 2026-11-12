@@ -3,7 +3,8 @@ using System.ComponentModel.DataAnnotations;
 namespace AppCine.Models;
 
 /// <summary>Cliente de la app. EsAdmin decide si ve el área de administración.</summary>
-public class Usuario : IEntidad
+/// <remarks>Con la fase 2 tiene baja lógica: sus compras quedan en el historial aunque se dé de baja.</remarks>
+public class Usuario : IEntidad, IActivable
 {
     public int Id { get; set; }
 
@@ -36,6 +37,8 @@ public class Usuario : IEntidad
 
     [Display(Name = "Es administrador")]
     public bool EsAdmin { get; set; }
+
+    public bool Activo { get; set; } = true;
 
     public string NombreCompleto => $"{Nombre} {Apellido}";
 

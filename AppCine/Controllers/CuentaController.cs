@@ -14,13 +14,13 @@ public class CuentaController(CineContext db) : Controller
     public async Task<IActionResult> Ingresar(string? returnUrl)
     {
         ViewBag.ReturnUrl = returnUrl;
-        return View(await db.Usuarios.AsNoTracking().OrderBy(u => u.Apellido).ThenBy(u => u.Nombre).ToListAsync());
+        return View(await db.Usuarios.AsNoTracking().Where(u => u.Activo).OrderBy(u => u.Apellido).ThenBy(u => u.Nombre).ToListAsync());
     }
 
     [HttpPost, ValidateAntiForgeryToken]
     public async Task<IActionResult> Ingresar(int usuarioId, string? returnUrl)
     {
-        var usuario = await db.Usuarios.AsNoTracking().FirstOrDefaultAsync(u => u.Id == usuarioId);
+        var usuario = await db.Usuarios.AsNoTracking().FirstOrDefaultAsync(u => u.Id == usuarioId && u.Activo);
         if (usuario is null)
         {
             return RedirectToAction(nameof(Ingresar));
