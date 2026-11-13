@@ -1,0 +1,35 @@
+@model List<Compra>
+@{
+    ViewData["Title"] = "Mis compras";
+}
+
+<h1 class="h3 mb-3">Mis compras</h1>
+
+@if (Model.Count == 0)
+{
+    <p class="text-muted">Todavía no compraste entradas.</p>
+    <a asp-controller="Home" asp-action="Index" class="btn btn-primary">Ver la cartelera</a>
+}
+
+<div class="list-group">
+    @foreach (var c in Model)
+    {
+        var funcion = c.Entradas.First().Funcion!;
+        var pasada = funcion.FechaHora < DateTime.Now;
+        <a asp-action="Detalle" asp-route-id="@c.Id"
+           class="list-group-item list-group-item-action d-flex justify-content-between align-items-center gap-2 @(pasada ? "text-muted" : "")">
+            <span>
+                <strong>@funcion.Pelicula!.Titulo</strong>
+                <span class="d-block small">
+                    @funcion.FechaHora.ToString("ddd dd/MM HH:mm") · @funcion.Sala!.Sede!.Nombre · @funcion.Sala.Nombre ·
+                    @(c.Entradas.Count == 1 ? "1 entrada" : $"{c.Entradas.Count} entradas")
+                    @if (pasada)
+                    {
+                        <span class="badge text-bg-light border ms-1">Ya pasó</span>
+                    }
+                </span>
+            </span>
+            <span class="horario text-nowrap">@c.Total.ToString("C")</span>
+        </a>
+    }
+</div>

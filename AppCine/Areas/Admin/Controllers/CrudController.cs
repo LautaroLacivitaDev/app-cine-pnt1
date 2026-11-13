@@ -13,6 +13,8 @@ public abstract class AdminController(CineContext db) : Controller
     protected CineContext Db { get; } = db;
 
     protected void Aviso(string mensaje) => TempData["Aviso"] = mensaje;
+
+    protected void Error(string mensaje) => TempData["Error"] = mensaje;
 }
 
 /// <summary>

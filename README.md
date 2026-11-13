@@ -91,8 +91,19 @@ géneros, distribuidoras y usuarios.
 - **Seguridad:** se fijó `System.Security.Cryptography.Pkcs` 10.0.14 porque la versión que trae
   `Microsoft.Data.SqlClient` (9.0.11) tiene vulnerabilidades conocidas.
 
-## Fase 2 (pendiente)
+## Fase 2: compra de entradas (en curso)
 
-Se agrega sin tocar el núcleo: `Compra` (con `UsuarioId`), `Entrada` (con `FuncionId`, índice único en
-función + fila + butaca), `ProductoCandy` e `ItemCandy`, la regla de edad según clasificación usando `Edad`,
-la pantalla "Mis compras" y el ABM de productos de candy.
+Ya implementado:
+
+- `Compra` (usuario, fecha, total) y `Entrada` (función, fila, butaca, precio al momento de comprar), con
+  **índice único función + fila + butaca**: aunque dos personas compren a la vez, la base rechaza la segunda.
+- Pantalla de elección de butacas (`/Compras/Nueva/{funcionId}`) desde los horarios de la cartelera y del detalle.
+  Hay que ingresar; se compran hasta 10 entradas por vez.
+- Reglas: la función tiene que estar activa y no haber empezado, la butaca tiene que existir en la sala y estar
+  libre, y la **edad del usuario** tiene que alcanzar la clasificación (+13, +16, +18).
+- Comprobante y **Mis compras**.
+- **Usuario con baja lógica** (`Activo`): sus compras quedan en el historial.
+- Una **función con entradas vendidas no se puede editar ni eliminar**; el panel muestra vendidas/capacidad.
+  Una sala no se puede achicar si deja afuera butacas vendidas.
+
+Pendiente: `ProductoCandy` e `ItemCandy` (candy dentro de la compra) y su ABM.

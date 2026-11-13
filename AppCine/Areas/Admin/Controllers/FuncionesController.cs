@@ -6,9 +6,14 @@ using Microsoft.EntityFrameworkCore;
 
 namespace AppCine.Areas.Admin.Controllers;
 
-/// <summary>ABM de funciones. Aplica las reglas de negocio 1 a 3 antes de guardar.</summary>
+/// <summary>
+/// ABM de funciones. Aplica las reglas de negocio 1 a 3 antes de guardar. Una función con entradas vendidas
+/// ya no se edita ni se da de baja: lo que compró la gente no puede cambiar por debajo.
+/// </summary>
 public class FuncionesController(CineContext db) : AdminController(db)
 {
+    private const string ConVentas = "Esta función ya tiene entradas vendidas: no se puede editar ni eliminar.";
+
     public async Task<IActionResult> Index(bool pasadas = false)
     {
         var ahora = DateTime.Now;
@@ -18,9 +23,18 @@ public class FuncionesController(CineContext db) : AdminController(db)
             .Include(f => f.Pelicula)
             .Include(f => f.Sala).ThenInclude(s => s!.Sede);
         ViewBag.Pasadas = pasadas;
-        return View(await (pasadas ? funciones.OrderByDescending(f => f.FechaHora) : funciones.OrderBy(f => f.FechaHora))
+        var lista = await (pasadas ? funciones.OrderByDescending(f => f.FechaHora) : funciones.OrderBy(f => f.FechaHora))
             .Take(300)
-            .ToListAsync());
+            .ToListAsync();
+
+        // Entradas vendidas por función, para mostrar la ocupación y ocultar Editar/Eliminar.
+        var ids = lista.Select(f => f.Id).ToList();
+        ViewBag.Vendidas = await Db.Entradas
+            .Where(e => ids.Contains(e.FuncionId))
+            .GroupBy(e => e.FuncionId)
+            .Select(g => new { FuncionId = g.Key, Cantidad = g.Count() })
+            .ToDictionaryAsync(x => x.FuncionId, x => x.Cantidad);
+        return View(lista);
     }
 
     public async Task<IActionResult> Create()
@@ -55,6 +69,12 @@ public class FuncionesController(CineContext db) : AdminController(db)
             return NotFound();
         }
 
+        if (await TieneVentasAsync(id))
+        {
+            Error(ConVentas);
+            return RedirectToAction(nameof(Index));
+        }
+
         await CargarOpcionesAsync();
         return View("Form", funcion);
     }
@@ -66,6 +86,12 @@ public class FuncionesController(CineContext db) : AdminController(db)
         if (existente is null)
         {
             return NotFound();
+        }
+
+        if (await TieneVentasAsync(id))
+        {
+            Error(ConVentas);
+            return RedirectToAction(nameof(Index));
         }
 
         funcion.Id = id;
@@ -92,11 +118,19 @@ public class FuncionesController(CineContext db) : AdminController(db)
             return NotFound();
         }
 
+        if (await TieneVentasAsync(id))
+        {
+            Error(ConVentas);
+            return RedirectToAction(nameof(Index));
+        }
+
         funcion.Activo = false;
         await Db.SaveChangesAsync();
         Aviso("Se eliminó la función.");
         return RedirectToAction(nameof(Index));
     }
+
+    private Task<bool> TieneVentasAsync(int funcionId) => Db.Entradas.AnyAsync(e => e.FuncionId == funcionId);
 
     private async Task ValidarReglasAsync(Funcion funcion)
     {

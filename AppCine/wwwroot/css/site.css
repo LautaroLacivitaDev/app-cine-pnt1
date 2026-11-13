@@ -47,3 +47,88 @@ body {
 .horario {
   font-variant-numeric: tabular-nums;
 }
+
+a.horario:hover {
+  background-color: #e9ecef !important;
+}
+
+/* Fase 2: mapa de butacas de la sala. */
+.sala-mapa {
+  overflow-x: auto;
+  padding-bottom: .5rem;
+}
+
+.pantalla {
+  width: min(100%, 480px);
+  margin: 0 auto 1rem;
+  padding: .25rem 0;
+  border-top: 4px solid #adb5bd;
+  border-radius: 50% 50% 0 0 / 12px 12px 0 0;
+  text-align: center;
+  font-size: .75rem;
+  letter-spacing: .3em;
+  text-transform: uppercase;
+  color: #6c757d;
+}
+
+.fila-butacas {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  width: max-content;
+  margin: 0 auto 4px;
+}
+
+.nro-fila {
+  width: 1.5rem;
+  margin-right: 4px;
+  text-align: right;
+  font-size: .75rem;
+  color: #6c757d;
+}
+
+.butaca {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border: 1px solid #adb5bd;
+  border-radius: 8px 8px 4px 4px;
+  background: #fff;
+  font-size: .7rem;
+  font-variant-numeric: tabular-nums;
+  cursor: pointer;
+  user-select: none;
+  vertical-align: middle;
+}
+
+.butaca-check:checked + .butaca,
+.butaca.muestra.elegida {
+  background: #0d6efd;
+  border-color: #0d6efd;
+  color: #fff;
+}
+
+.butaca-check:disabled + .butaca {
+  cursor: not-allowed;
+  opacity: .6;
+}
+
+.butaca.ocupada {
+  background: #6c757d;
+  border-color: #6c757d;
+  color: #fff;
+  opacity: 1;
+}
+
+.butaca-check:focus-visible + .butaca {
+  outline: 2px solid #258cfb;
+  outline-offset: 2px;
+}
+
+.butaca.muestra {
+  width: 18px;
+  height: 18px;
+  cursor: default;
+}

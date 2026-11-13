@@ -22,6 +22,31 @@ namespace AppCine.Data.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
+            modelBuilder.Entity("AppCine.Models.Compra", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("FechaHora")
+                        .HasColumnType("datetime2");
+
+                    b.Property<decimal>("Total")
+                        .HasPrecision(12, 2)
+                        .HasColumnType("decimal(12,2)");
+
+                    b.Property<int>("UsuarioId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UsuarioId", "FechaHora");
+
+                    b.ToTable("Compras");
+                });
+
             modelBuilder.Entity("AppCine.Models.Distribuidora", b =>
                 {
                     b.Property<int>("Id")
@@ -61,6 +86,40 @@ namespace AppCine.Data.Migrations
                             Activo = true,
                             RazonSocial = "Cine Sur Films S.R.L."
                         });
+                });
+
+            modelBuilder.Entity("AppCine.Models.Entrada", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("Butaca")
+                        .HasColumnType("int");
+
+                    b.Property<int>("CompraId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Fila")
+                        .HasColumnType("int");
+
+                    b.Property<int>("FuncionId")
+                        .HasColumnType("int");
+
+                    b.Property<decimal>("Precio")
+                        .HasPrecision(12, 2)
+                        .HasColumnType("decimal(12,2)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CompraId");
+
+                    b.HasIndex("FuncionId", "Fila", "Butaca")
+                        .IsUnique();
+
+                    b.ToTable("Entradas");
                 });
 
             modelBuilder.Entity("AppCine.Models.Funcion", b =>
@@ -608,6 +667,11 @@ namespace AppCine.Data.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<bool>("Activo")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(true);
+
                     b.Property<string>("Apellido")
                         .IsRequired()
                         .HasMaxLength(50)
@@ -644,6 +708,7 @@ namespace AppCine.Data.Migrations
                         new
                         {
                             Id = 1,
+                            Activo = true,
                             Apellido = "Gómez",
                             Email = "laura.gomez@example.com",
                             EsAdmin = true,
@@ -655,6 +720,7 @@ namespace AppCine.Data.Migrations
                         new
                         {
                             Id = 2,
+                            Activo = true,
                             Apellido = "Pérez",
                             Email = "martin.perez@example.com",
                             EsAdmin = false,
@@ -666,6 +732,7 @@ namespace AppCine.Data.Migrations
                         new
                         {
                             Id = 3,
+                            Activo = true,
                             Apellido = "Díaz",
                             Email = "sofia.diaz@example.com",
                             EsAdmin = false,
@@ -886,6 +953,36 @@ namespace AppCine.Data.Migrations
                         });
                 });
 
+            modelBuilder.Entity("AppCine.Models.Compra", b =>
+                {
+                    b.HasOne("AppCine.Models.Usuario", "Usuario")
+                        .WithMany()
+                        .HasForeignKey("UsuarioId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Usuario");
+                });
+
+            modelBuilder.Entity("AppCine.Models.Entrada", b =>
+                {
+                    b.HasOne("AppCine.Models.Compra", "Compra")
+                        .WithMany("Entradas")
+                        .HasForeignKey("CompraId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("AppCine.Models.Funcion", "Funcion")
+                        .WithMany()
+                        .HasForeignKey("FuncionId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Compra");
+
+                    b.Navigation("Funcion");
+                });
+
             modelBuilder.Entity("AppCine.Models.Funcion", b =>
                 {
                     b.HasOne("AppCine.Models.Pelicula", "Pelicula")
@@ -967,6 +1064,11 @@ namespace AppCine.Data.Migrations
                         .HasForeignKey("PeliculaId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("AppCine.Models.Compra", b =>
+                {
+                    b.Navigation("Entradas");
                 });
 
             modelBuilder.Entity("AppCine.Models.Distribuidora", b =>

@@ -78,13 +78,21 @@ public class SalasController(CineContext db) : CrudController<Sala>(db)
         {
             ModelState.AddModelError(nameof(Sala.SedeId), "Elegí una sede activa.");
         }
+
+        // No se puede achicar la sala si deja afuera butacas que ya se vendieron.
+        if (sala.Id != 0 && await Db.Entradas.AnyAsync(e => e.Funcion!.SalaId == sala.Id
+                && (e.Fila > sala.CantidadFilas || e.Butaca > sala.ButacasPorFila)))
+        {
+            ModelState.AddModelError(string.Empty,
+                "Hay entradas vendidas en butacas que quedarían fuera de la sala. No se puede achicar tanto.");
+        }
     }
 }
 
 public class UsuariosController(CineContext db) : CrudController<Usuario>(db)
 {
     protected override IQueryable<Usuario> Listado() =>
-        Db.Usuarios.OrderBy(u => u.Apellido).ThenBy(u => u.Nombre);
+        Db.Usuarios.Where(u => u.Activo).OrderBy(u => u.Apellido).ThenBy(u => u.Nombre);
 
     protected override string Nombre(Usuario usuario) => usuario.NombreCompleto;
 }
