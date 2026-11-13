@@ -4,6 +4,10 @@
 }
 
 <partial name="_Encabezado" />
+@if (Model.Count == 0)
+{
+    <partial name="_Vacio" model="@("Todavía no hay sedes.")" />
+}
 <ul class="list-group">
     @foreach (var s in Model)
     {

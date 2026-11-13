@@ -2,37 +2,83 @@
 @{
     ViewData["Title"] = $"Compra n.º {Model.Id}";
     // Las entradas se agrupan por función (con AsNoTracking cada entrada trae su propia copia de la función).
-    var porFuncion = Model.Entradas.GroupBy(e => e.FuncionId).Select(g => (Funcion: g.First().Funcion!, Entradas: g.ToList()));
+    var porFuncion = Model.Entradas
+        .GroupBy(e => e.FuncionId)
+        .Select(g => (Funcion: g.First().Funcion!, Entradas: g.OrderBy(e => e.Fila).ThenBy(e => e.Butaca).ToList()))
+        .ToList();
 }
 
-<a asp-action="Index" class="btn btn-link px-0 mb-2">← Mis compras</a>
-
-<h1 class="h3 mb-1">Compra n.º @Model.Id</h1>
-<p class="text-muted">Realizada el @Model.FechaHora.ToString("dd/MM/yyyy 'a las' HH:mm")</p>
+<a asp-action="Index" class="btn btn-link px-0 mb-2">Mis compras</a>
 
 @foreach (var grupo in porFuncion)
 {
     var f = grupo.Funcion;
-    <div class="card mb-3">
-        <div class="card-body">
-            <h2 class="h5 mb-1">@f.Pelicula!.Titulo</h2>
-            <p class="text-muted mb-2">
-                @f.FechaHora.ToString("dddd dd/MM, HH:mm") · @f.Sala!.Sede!.Nombre (@f.Sala.Sede.Direccion) · @f.Sala.Nombre ·
-                @f.Formato.Texto()@(f.Subtitulada ? " SUB" : "")
-            </p>
-            <ul class="list-group list-group-flush">
-                @foreach (var e in grupo.Entradas.OrderBy(e => e.Fila).ThenBy(e => e.Butaca))
-                {
-                    <li class="list-group-item d-flex justify-content-between px-0">
-                        <span>@e.Ubicacion</span>
-                        <span class="horario">@e.Precio.ToString("C")</span>
-                    </li>
-                }
-            </ul>
+    var filas = grupo.Entradas.GroupBy(e => e.Fila).ToList();
+    var vigente = f.FechaHora > DateTime.Now;
+    <article class="talon mb-3" aria-label="Entrada para @f.Pelicula!.Titulo">
+        <div class="talon-cuerpo">
+            <div class="dato-chico">Compra n.º @Model.Id, realizada el @Model.FechaHora.ToString("dd/MM/yyyy 'a las' HH:mm")</div>
+            <h1 class="h3 mt-1 mb-3">@f.Pelicula.Titulo</h1>
+            <dl class="datos">
+                <div><dt>Día</dt><dd class="text-capitalize">@f.FechaHora.ToString("dddd dd/MM")</dd></div>
+                <div><dt>Hora</dt><dd>@f.FechaHora.ToString("HH:mm")</dd></div>
+                <div><dt>Sala</dt><dd>@f.Sala!.Sede!.Nombre, @f.Sala.Nombre</dd></div>
+                <div><dt>Dirección</dt><dd>@f.Sala.Sede.Direccion</dd></div>
+                <div><dt>Versión</dt><dd>@f.Formato.Texto(), @f.Idioma.Texto().ToLower()@(f.Subtitulada ? " subtitulada" : "")</dd></div>
+            </dl>
         </div>
-    </div>
+
+        <div class="talon-perforado" aria-hidden="true">
+            <span class="talon-muesca izquierda"></span>
+            <span class="talon-muesca derecha"></span>
+        </div>
+
+        <div class="talon-pie">
+            <div class="d-flex flex-wrap gap-4">
+                @foreach (var fila in filas)
+                {
+                    <div class="d-flex gap-4">
+                        <div>
+                            <div class="dato-chico">Fila</div>
+                            <div class="talon-numero">@fila.Key</div>
+                        </div>
+                        <div>
+                            <div class="dato-chico">@(fila.Count() == 1 ? "Butaca" : "Butacas")</div>
+                            <div class="talon-numero">@ListaButacas(fila.Select(e => e.Butaca).ToList())</div>
+                        </div>
+                    </div>
+                }
+            </div>
+            <div class="d-flex justify-content-between align-items-baseline mt-3 pt-2 border-top">
+                <span class="text-muted">
+                    @(grupo.Entradas.Count == 1 ? "1 entrada" : $"{grupo.Entradas.Count} entradas") de @grupo.Entradas[0].Precio.ToString("C0")
+                </span>
+                <span class="fw-bold fs-5 horario">@grupo.Entradas.Sum(e => e.Precio).ToString("C0")</span>
+            </div>
+            @if (vigente)
+            {
+                <span class="talon-sello">Entrada válida</span>
+            }
+        </div>
+    </article>
 }
 
-<p class="fs-5 text-end">Total: <strong class="horario">@Model.Total.ToString("C")</strong></p>
+@if (porFuncion.Count > 1)
+{
+    <p class="fs-5">Total de la compra: <strong class="horario">@Model.Total.ToString("C0")</strong></p>
+}
 
-<a asp-controller="Home" asp-action="Index" class="btn btn-outline-dark">Volver a la cartelera</a>
+<p class="text-muted">Mostrá esta pantalla en la entrada de la sala.</p>
+<div class="d-flex flex-wrap gap-2">
+    <a asp-action="Index" class="btn btn-outline-primary">Ver Mis compras</a>
+    <a asp-controller="Home" asp-action="Index" class="btn btn-outline-dark">Volver a la cartelera</a>
+</div>
+
+@functions {
+    // "11", "11 y 12", "11, 12 y 13"
+    private static string ListaButacas(List<int> numeros) => numeros.Count switch
+    {
+        1 => numeros[0].ToString(),
+        _ => string.Join(", ", numeros.Take(numeros.Count - 1)) + " y " + numeros[^1]
+    };
+}

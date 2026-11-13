@@ -2,6 +2,11 @@
     ViewData["Title"] = "Sin permiso";
 }
 
-<h1 class="h3">Sin permiso</h1>
-<p>El área de administración es solo para usuarios administradores.</p>
-<a asp-controller="Cuenta" asp-action="Ingresar" class="btn btn-primary">Ingresar con otro usuario</a>
+<div class="mx-auto" style="max-width: 32rem">
+    <h1>Sin permiso</h1>
+    <p>La administración es solo para usuarios administradores. Ingresá con un usuario que tenga ese permiso.</p>
+    <div class="d-flex flex-wrap gap-2">
+        <a asp-controller="Cuenta" asp-action="Ingresar" class="btn btn-primary">Ingresar con otro usuario</a>
+        <a asp-controller="Home" asp-action="Index" class="btn btn-outline-dark">Volver a la cartelera</a>
+    </div>
+</div>

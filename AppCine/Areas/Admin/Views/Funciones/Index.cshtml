@@ -6,17 +6,17 @@
 }
 
 <partial name="_Encabezado" />
-<div class="btn-group mb-3" role="group" aria-label="Período">
+<div class="btn-group mb-2" role="group" aria-label="Período">
     <a asp-action="Index" class="btn @(pasadas ? "btn-outline-dark" : "btn-dark")">Próximas</a>
     <a asp-action="Index" asp-route-pasadas="true" class="btn @(pasadas ? "btn-dark" : "btn-outline-dark")">Pasadas</a>
 </div>
 @if (Model.Count == 0)
 {
-    <p class="text-muted">No hay funciones.</p>
+    <partial name="_Vacio" model="@(pasadas ? "No hay funciones pasadas." : "No hay funciones programadas.")" />
 }
 @foreach (var dia in Model.GroupBy(f => f.FechaHora.Date))
 {
-    <h2 class="h6 mt-3">@dia.Key.ToString("dddd dd/MM/yyyy")</h2>
+    <h2 class="h6 fw-bold text-capitalize mt-4 mb-2">@dia.Key.ToString("dddd dd/MM/yyyy")</h2>
     <ul class="list-group">
         @foreach (var f in dia)
         {

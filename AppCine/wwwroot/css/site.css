@@ -1,15 +1,99 @@
+/* ==========================================================================
+   Tema "Boletería": la entrada de cine en papel y la marquesina de Corrientes.
+   Bootstrap 5.3 se personaliza con sus variables CSS; abajo van los componentes
+   propios (entradita de horario, mapa de butacas, talón de comprobante).
+   ========================================================================== */
+
+/* Fuentes incluidas en el proyecto (SIL Open Font License, ver wwwroot/fonts). */
+@font-face {
+  font-family: "Big Shoulders";
+  src: url("../fonts/big-shoulders-800.woff2") format("woff2");
+  font-weight: 800;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Atkinson Hyperlegible Next";
+  src: url("../fonts/atkinson-hyperlegible-next-400.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Atkinson Hyperlegible Next";
+  src: url("../fonts/atkinson-hyperlegible-next-700.woff2") format("woff2");
+  font-weight: 600 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+:root {
+  /* Paleta */
+  --tinta: #2A2527;
+  --butaca: #6E1E45;
+  --butaca-oscuro: #5A1838;
+  --butaca-presionado: #4F1532;
+  --marquesina: #E8B53A;
+  --papel: #F4F2F0;
+  --trazo: #DEDAD6;
+  --vendida: #B1AAA6;
+  --secundario: #625A5B;
+  --blanco: #FFFFFF;
+
+  --fuente-marquesina: "Big Shoulders", "Arial Narrow", sans-serif;
+  --fuente-texto: "Atkinson Hyperlegible Next", system-ui, -apple-system, "Segoe UI", sans-serif;
+
+  /* Bootstrap */
+  --bs-body-font-family: var(--fuente-texto);
+  --bs-body-font-size: 1rem;
+  --bs-body-color: var(--tinta);
+  --bs-body-color-rgb: 42, 37, 39;
+  --bs-body-bg: var(--papel);
+  --bs-body-bg-rgb: 244, 242, 240;
+  --bs-emphasis-color: var(--tinta);
+  --bs-secondary-color: var(--secundario);
+  --bs-border-color: var(--trazo);
+  --bs-border-radius: .5rem;
+  --bs-border-radius-lg: .75rem;
+  --bs-link-color: var(--butaca);
+  --bs-link-color-rgb: 110, 30, 69;
+  --bs-link-hover-color: var(--butaca-oscuro);
+  --bs-link-hover-color-rgb: 90, 24, 56;
+  --bs-primary: var(--butaca);
+  --bs-primary-rgb: 110, 30, 69;
+  --bs-dark: var(--tinta);
+  --bs-dark-rgb: 42, 37, 39;
+  --bs-focus-ring-color: rgba(232, 181, 58, .6);
+}
+
 html {
-  position: relative;
-  min-height: 100%;
   font-size: 16px;
 }
 
 body {
-  margin-bottom: 60px;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  line-height: 1.5;
 }
 
-.btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
-  box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
+body > .contenido {
+  flex: 1 0 auto;
+}
+
+/* Foco visible y uniforme en toda la app. */
+:focus-visible {
+  outline: 3px solid var(--marquesina);
+  outline-offset: 2px;
+}
+
+.btn:focus-visible,
+.form-control:focus,
+.form-select:focus,
+.form-check-input:focus {
+  box-shadow: 0 0 0 .25rem rgba(232, 181, 58, .55);
 }
 
 /* Pensado primero para el celular: zonas tocables de al menos 44 px. */
@@ -21,17 +105,271 @@ body {
   min-height: 36px;
 }
 
-.poster {
-  width: 100%;
-  aspect-ratio: 2 / 3;
-  object-fit: cover;
-  background: #1f2937;
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    transition: none !important;
+    animation: none !important;
+  }
 }
 
-.poster-chico {
-  width: 96px;
-  flex-shrink: 0;
+/* --------------------------------------------------------------------------
+   Tipografía
+   -------------------------------------------------------------------------- */
+
+h1, .marquesina {
+  font-family: var(--fuente-marquesina);
+  font-weight: 800;
+  letter-spacing: .01em;
+  line-height: .95;
 }
+
+h1 {
+  font-size: clamp(2.75rem, 6vw, 4.5rem);
+  margin-bottom: 1.25rem;
+}
+
+/* Las vistas usan <h1 class="h3">: se mantiene la tipografía de marquesina, más chica. */
+h1.h3 {
+  font-size: clamp(2.25rem, 4.5vw, 3rem);
+}
+
+.dato-chico {
+  font-size: .8125rem;
+  color: var(--secundario);
+}
+
+/* --------------------------------------------------------------------------
+   Barra de navegación y pie
+   -------------------------------------------------------------------------- */
+
+.barra {
+  background: var(--tinta);
+  --bs-navbar-color: #DEDAD6;
+  --bs-navbar-hover-color: #FFFFFF;
+  --bs-navbar-active-color: #FFFFFF;
+  --bs-navbar-padding-y: 0;
+}
+
+.barra .navbar-brand {
+  font-family: var(--fuente-marquesina);
+  font-weight: 800;
+  font-size: 1.875rem;
+  letter-spacing: .02em;
+  color: var(--papel);
+  display: flex;
+  align-items: center;
+  gap: .625rem;
+  padding: .5rem 0;
+}
+
+.barra .navbar-brand::before {
+  content: "";
+  width: 12px;
+  height: 12px;
+  border-radius: 2px;
+  background: var(--marquesina);
+}
+
+.barra .nav-link {
+  display: flex;
+  align-items: center;
+  padding-block: 1rem;
+  border-bottom: 3px solid transparent;
+}
+
+.barra .nav-link[aria-current="page"] {
+  color: #FFFFFF;
+  font-weight: 700;
+  border-bottom-color: var(--marquesina);
+}
+
+.barra .saludo {
+  color: #DEDAD6;
+}
+
+.barra .btn-salir {
+  color: var(--papel);
+  border: 1px solid #6B6265;
+  border-radius: .5rem;
+  padding-inline: .875rem;
+}
+
+.barra .btn-salir:hover {
+  border-color: var(--papel);
+  color: #FFFFFF;
+}
+
+.pie {
+  border-top: 1px solid var(--trazo);
+  color: var(--secundario);
+  font-size: .875rem;
+  padding-block: 1.25rem;
+  margin-top: 3rem;
+}
+
+/* --------------------------------------------------------------------------
+   Bootstrap con la paleta
+   -------------------------------------------------------------------------- */
+
+.btn {
+  font-weight: 700;
+  border-radius: .5rem;
+}
+
+.btn-primary {
+  --bs-btn-bg: var(--butaca);
+  --bs-btn-border-color: var(--butaca);
+  --bs-btn-hover-bg: var(--butaca-oscuro);
+  --bs-btn-hover-border-color: var(--butaca-oscuro);
+  --bs-btn-active-bg: var(--butaca-presionado);
+  --bs-btn-active-border-color: var(--butaca-presionado);
+  --bs-btn-disabled-bg: var(--trazo);
+  --bs-btn-disabled-border-color: var(--trazo);
+  --bs-btn-disabled-color: var(--secundario);
+  --bs-btn-disabled-opacity: 1;
+}
+
+.btn-outline-primary {
+  --bs-btn-color: var(--butaca);
+  --bs-btn-border-color: var(--butaca);
+  --bs-btn-hover-color: #FFFFFF;
+  --bs-btn-hover-bg: var(--butaca);
+  --bs-btn-hover-border-color: var(--butaca);
+  --bs-btn-active-color: #FFFFFF;
+  --bs-btn-active-bg: var(--butaca-oscuro);
+  --bs-btn-active-border-color: var(--butaca-oscuro);
+}
+
+.btn-dark {
+  --bs-btn-bg: var(--tinta);
+  --bs-btn-border-color: var(--tinta);
+  --bs-btn-hover-bg: #403A3C;
+  --bs-btn-hover-border-color: #403A3C;
+}
+
+.btn-outline-dark,
+.btn-outline-secondary {
+  --bs-btn-color: var(--tinta);
+  --bs-btn-border-color: var(--vendida);
+  --bs-btn-hover-color: var(--tinta);
+  --bs-btn-hover-bg: #EBE8E4;
+  --bs-btn-hover-border-color: var(--tinta);
+  --bs-btn-active-color: var(--tinta);
+  --bs-btn-active-bg: var(--trazo);
+  --bs-btn-active-border-color: var(--tinta);
+}
+
+.btn-outline-danger {
+  --bs-btn-color: #A4262C;
+  --bs-btn-border-color: #C98A8D;
+  --bs-btn-hover-bg: #A4262C;
+  --bs-btn-hover-border-color: #A4262C;
+}
+
+.btn-link {
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.form-label {
+  font-weight: 700;
+  font-size: .875rem;
+}
+
+.form-control,
+.form-select {
+  border-color: var(--vendida);
+  border-radius: .5rem;
+  background-color: var(--blanco);
+}
+
+.form-control:focus,
+.form-select:focus {
+  border-color: var(--butaca);
+}
+
+.form-check-input:checked {
+  background-color: var(--butaca);
+  border-color: var(--butaca);
+}
+
+.card,
+.list-group {
+  --bs-card-border-color: var(--trazo);
+  --bs-card-border-radius: .75rem;
+  --bs-list-group-border-color: var(--trazo);
+  --bs-list-group-border-radius: .75rem;
+  --bs-list-group-bg: var(--blanco);
+  --bs-list-group-action-hover-bg: #F8F7F5;
+  --bs-list-group-action-hover-color: var(--tinta);
+  --bs-list-group-action-color: var(--tinta);
+}
+
+.list-group-item {
+  padding: .875rem 1.125rem;
+}
+
+.alert {
+  border-radius: .75rem;
+  color: var(--tinta);
+}
+
+.alert-success {
+  background: #EAF2EC;
+  border-color: #A7C9AF;
+}
+
+.alert-danger {
+  background: #F7E8EE;
+  border-color: #D9A5BA;
+}
+
+.alert-warning {
+  background: #FBF1D8;
+  border-color: var(--marquesina);
+}
+
+.text-danger {
+  color: #A4262C !important;
+}
+
+/* Insignias: clasificación como sello, el resto en la paleta. */
+.badge {
+  font-weight: 700;
+}
+
+.text-bg-secondary,
+.text-bg-info {
+  background-color: var(--tinta) !important;
+  color: #FFFFFF !important;
+}
+
+.text-bg-warning {
+  background-color: var(--marquesina) !important;
+  color: var(--tinta) !important;
+}
+
+.text-bg-light {
+  background-color: var(--papel) !important;
+  color: var(--secundario) !important;
+}
+
+.clasificacion {
+  display: inline-block;
+  font-family: var(--fuente-marquesina);
+  font-weight: 800;
+  font-size: .9375rem;
+  line-height: 1;
+  color: var(--tinta);
+  border: 1.5px solid var(--tinta);
+  border-radius: 4px;
+  padding: .2rem .4rem .15rem;
+  vertical-align: middle;
+}
+
+/* --------------------------------------------------------------------------
+   Cartelera
+   -------------------------------------------------------------------------- */
 
 .dias {
   display: flex;
@@ -40,95 +378,487 @@ body {
   padding-bottom: .25rem;
 }
 
-.dias .btn {
-  white-space: nowrap;
+.dia {
+  display: block;
+  flex: 0 0 auto;
+  min-width: 76px;
+  padding: .5rem .875rem;
+  border: 1px solid var(--trazo);
+  border-radius: .5rem;
+  background: var(--blanco);
+  color: var(--tinta);
+  text-decoration: none;
 }
 
-.horario {
+.dia:hover {
+  border-color: var(--tinta);
+  color: var(--tinta);
+}
+
+.dia[aria-current="date"] {
+  background: var(--tinta);
+  border-color: var(--tinta);
+  color: var(--papel);
+}
+
+.dia-nombre {
+  display: block;
+  font-size: .8125rem;
+  font-weight: 700;
+}
+
+.dia-fecha {
+  display: block;
+  font-family: var(--fuente-marquesina);
+  font-weight: 800;
+  font-size: 1.375rem;
+  line-height: 1.1;
+}
+
+.filtros {
+  background: var(--blanco);
+  border: 1px solid var(--trazo);
+  border-radius: .75rem;
+  padding: 1.25rem;
+}
+
+.pelicula {
+  display: flex;
+  gap: 1.25rem;
+  height: 100%;
+  padding: 1.25rem;
+  background: var(--blanco);
+  border: 1px solid var(--trazo);
+  border-radius: .75rem;
+}
+
+.pelicula-titulo {
+  font-family: var(--fuente-marquesina);
+  font-weight: 800;
+  font-size: 2.125rem;
+  line-height: 1;
+  margin: 0 0 .375rem;
+}
+
+.pelicula-titulo a {
+  color: var(--tinta);
+  text-decoration: none;
+}
+
+.pelicula-titulo a:hover {
+  color: var(--butaca);
+}
+
+.pelicula-datos {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: .375rem .875rem;
+  font-size: .875rem;
+  color: var(--secundario);
+}
+
+.sede-nombre {
+  font-size: .8125rem;
+  font-weight: 700;
+  color: var(--secundario);
+  margin-bottom: .375rem;
+}
+
+.poster {
+  width: 100%;
+  aspect-ratio: 2 / 3;
+  object-fit: cover;
+  background: var(--tinta);
+  border-radius: .375rem;
+}
+
+.poster-chico {
+  width: 112px;
+  flex-shrink: 0;
+}
+
+@media (max-width: 575.98px) {
+  .poster-chico {
+    width: 84px;
+  }
+
+  .pelicula {
+    gap: 1rem;
+    padding: 1rem;
+  }
+
+  .pelicula-titulo {
+    font-size: 1.75rem;
+  }
+}
+
+/* Entradita: cada horario es un boleto con muescas a los costados. */
+.entrada {
+  position: relative;
+  display: inline-flex;
+  align-items: stretch;
+  min-height: 44px;
+  background: var(--papel);
+  border: 1px solid var(--trazo);
+  border-radius: .375rem;
+  color: var(--tinta);
+  text-decoration: none;
+}
+
+.entrada::before,
+.entrada::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  width: 11px;
+  height: 11px;
+  margin-top: -6px;
+  border-radius: 50%;
+  background: var(--blanco);
+  border: 1px solid var(--trazo);
+}
+
+.entrada::before {
+  left: -6px;
+  clip-path: inset(0 0 0 50%);
+}
+
+.entrada::after {
+  right: -6px;
+  clip-path: inset(0 50% 0 0);
+}
+
+.entrada:hover {
+  background: #EBE8E4;
+  border-color: var(--vendida);
+  color: var(--tinta);
+}
+
+.entrada-hora {
+  display: flex;
+  align-items: center;
+  padding: 0 .75rem 0 .875rem;
+  font-family: var(--fuente-marquesina);
+  font-weight: 800;
+  font-size: 1.5rem;
   font-variant-numeric: tabular-nums;
 }
 
-a.horario:hover {
-  background-color: #e9ecef !important;
+.entrada-formato {
+  display: flex;
+  align-items: center;
+  padding: 0 .75rem 0 .625rem;
+  border-left: 1px dashed var(--vendida);
+  font-size: .75rem;
+  font-weight: 700;
+  color: var(--secundario);
 }
 
-/* Fase 2: mapa de butacas de la sala. */
+/* --------------------------------------------------------------------------
+   Datos en fila (película, función): etiqueta chica arriba, valor abajo.
+   -------------------------------------------------------------------------- */
+
+.datos {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .75rem 2.5rem;
+  margin: 0 0 2rem;
+}
+
+.datos dt {
+  font-size: .8125rem;
+  font-weight: 400;
+  color: var(--secundario);
+}
+
+.datos dd {
+  margin: 0;
+  font-weight: 700;
+}
+
+/* --------------------------------------------------------------------------
+   Mapa de butacas
+   -------------------------------------------------------------------------- */
+
+.panel {
+  background: var(--blanco);
+  border: 1px solid var(--trazo);
+  border-radius: .75rem;
+  padding: 1.5rem;
+}
+
 .sala-mapa {
   overflow-x: auto;
   padding-bottom: .5rem;
 }
 
+.sala-mapa-interior {
+  width: max-content;
+  margin: 0 auto;
+}
+
 .pantalla {
-  width: min(100%, 480px);
-  margin: 0 auto 1rem;
-  padding: .25rem 0;
-  border-top: 4px solid #adb5bd;
-  border-radius: 50% 50% 0 0 / 12px 12px 0 0;
+  height: 28px;
+  margin: 0 2.5rem .375rem;
+  border-top: 6px solid var(--tinta);
+  border-radius: 50% 50% 0 0 / 28px 28px 0 0;
+}
+
+.pantalla-texto {
   text-align: center;
-  font-size: .75rem;
-  letter-spacing: .3em;
-  text-transform: uppercase;
-  color: #6c757d;
+  font-size: .8125rem;
+  color: var(--secundario);
+  margin-bottom: 1.75rem;
 }
 
 .fila-butacas {
   display: flex;
   align-items: center;
   gap: 4px;
-  width: max-content;
-  margin: 0 auto 4px;
+  margin-bottom: 4px;
 }
 
 .nro-fila {
   width: 1.5rem;
-  margin-right: 4px;
-  text-align: right;
   font-size: .75rem;
-  color: #6c757d;
+  font-weight: 700;
+  color: var(--secundario);
+  text-align: center;
 }
 
 .butaca {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 32px;
-  height: 32px;
-  border: 1px solid #adb5bd;
-  border-radius: 8px 8px 4px 4px;
-  background: #fff;
-  font-size: .7rem;
+  width: 30px;
+  height: 30px;
+  border: 1px solid var(--vendida);
+  border-radius: 9px 9px 4px 4px;
+  background: var(--blanco);
+  color: var(--secundario);
+  font-size: .6875rem;
+  font-weight: 700;
   font-variant-numeric: tabular-nums;
   cursor: pointer;
   user-select: none;
-  vertical-align: middle;
+}
+
+.butaca-check:not(:disabled) + .butaca:hover {
+  border-color: var(--butaca);
 }
 
 .butaca-check:checked + .butaca,
 .butaca.muestra.elegida {
-  background: #0d6efd;
-  border-color: #0d6efd;
-  color: #fff;
+  background: var(--butaca);
+  border-color: var(--butaca);
+  color: #FFFFFF;
 }
 
-.butaca-check:disabled + .butaca {
+.butaca.ocupada,
+.butaca-check:disabled + .butaca.ocupada {
+  background: var(--vendida);
+  border-color: var(--vendida);
+  color: transparent;
   cursor: not-allowed;
-  opacity: .6;
 }
 
-.butaca.ocupada {
-  background: #6c757d;
-  border-color: #6c757d;
-  color: #fff;
-  opacity: 1;
+/* Compra bloqueada (edad o función empezada): las libres se ven apagadas. */
+.butaca-check:disabled + .butaca:not(.ocupada) {
+  cursor: not-allowed;
+  opacity: .5;
 }
 
 .butaca-check:focus-visible + .butaca {
-  outline: 2px solid #258cfb;
+  outline: 3px solid var(--marquesina);
   outline-offset: 2px;
 }
 
 .butaca.muestra {
   width: 18px;
   height: 18px;
+  border-radius: 6px 6px 3px 3px;
   cursor: default;
+}
+
+.leyenda {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 1.5rem;
+  margin-top: 1.25rem;
+  font-size: .875rem;
+  color: var(--secundario);
+}
+
+.leyenda > span {
+  display: flex;
+  align-items: center;
+  gap: .5rem;
+}
+
+.seleccion-total {
+  font-family: var(--fuente-marquesina);
+  font-weight: 800;
+  font-size: 2.75rem;
+  line-height: 1;
+  box-shadow: inset 0 -10px 0 var(--marquesina);
+}
+
+.seleccion-pie {
+  border-top: 1px dashed var(--vendida);
+  padding-top: 1rem;
+}
+
+/* En escritorio el resumen acompaña al mapa; en el celular queda fijo abajo. */
+.resumen-compra {
+  position: sticky;
+  top: 1rem;
+  z-index: 10;
+}
+
+@media (max-width: 991.98px) {
+  .resumen-compra {
+    top: auto;
+    bottom: 0;
+  }
+
+  .resumen-compra > .panel {
+    border-radius: .75rem .75rem 0 0;
+    box-shadow: 0 -4px 16px rgba(42, 37, 39, .12);
+    padding: 1rem 1.25rem;
+  }
+
+  .seleccion-total {
+    font-size: 2rem;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   Comprobante: talón de entrada
+   -------------------------------------------------------------------------- */
+
+.talon {
+  background: var(--blanco);
+  border: 1px solid var(--trazo);
+  border-radius: .875rem;
+  max-width: 40rem;
+}
+
+.talon-cuerpo {
+  padding: 1.25rem 1.5rem 1rem;
+}
+
+.talon-perforado {
+  position: relative;
+  height: 24px;
+}
+
+.talon-perforado::before {
+  content: "";
+  position: absolute;
+  left: 1.5rem;
+  right: 1.5rem;
+  top: 11px;
+  border-top: 2px dashed var(--trazo);
+}
+
+.talon-muesca {
+  position: absolute;
+  top: 0;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: var(--papel);
+  border: 1px solid var(--trazo);
+}
+
+.talon-muesca.izquierda {
+  left: -13px;
+  clip-path: inset(0 0 0 50%);
+}
+
+.talon-muesca.derecha {
+  right: -13px;
+  clip-path: inset(0 50% 0 0);
+}
+
+.talon-pie {
+  position: relative;
+  padding: .75rem 1.5rem 1.25rem;
+}
+
+.talon-numero {
+  font-family: var(--fuente-marquesina);
+  font-weight: 800;
+  font-size: 3.5rem;
+  line-height: .9;
+}
+
+.talon-sello {
+  position: absolute;
+  top: .25rem;
+  right: 1.25rem;
+  transform: rotate(-8deg);
+  background: var(--marquesina);
+  color: var(--tinta);
+  font-family: var(--fuente-marquesina);
+  font-weight: 800;
+  font-size: 1.125rem;
+  line-height: 1;
+  padding: .5rem .625rem .375rem;
+  border-radius: .375rem;
+}
+
+.talon .datos {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  margin: 0;
+}
+
+@media (min-width: 576px) {
+  .talon .datos {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+/* --------------------------------------------------------------------------
+   Panel de administración
+   -------------------------------------------------------------------------- */
+
+.seccion-admin {
+  display: block;
+  height: 100%;
+  padding: 1.25rem;
+  background: var(--blanco);
+  border: 1px solid var(--trazo);
+  border-radius: .75rem;
+  color: var(--tinta);
+  text-decoration: none;
+}
+
+.seccion-admin:hover {
+  border-color: var(--tinta);
+  color: var(--tinta);
+}
+
+.seccion-admin-titulo {
+  font-family: var(--fuente-marquesina);
+  font-weight: 800;
+  font-size: 1.75rem;
+  line-height: 1;
+  margin-bottom: .375rem;
+}
+
+.vacio {
+  padding: 2rem 1.5rem;
+  background: var(--blanco);
+  border: 1px dashed var(--vendida);
+  border-radius: .75rem;
+  text-align: center;
+  color: var(--secundario);
+}
+
+.horario {
+  font-variant-numeric: tabular-nums;
 }
