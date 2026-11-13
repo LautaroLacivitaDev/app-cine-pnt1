@@ -7,15 +7,16 @@
     ViewData["Title"] = $"Entradas para {pelicula.Titulo}";
 }
 
-<a asp-controller="Peliculas" asp-action="Detalle" asp-route-id="@pelicula.Id" class="btn btn-link px-0 mb-2">← Volver a la película</a>
+<a asp-controller="Peliculas" asp-action="Detalle" asp-route-id="@pelicula.Id" class="btn btn-link px-0 mb-1">Volver a la película</a>
 
-<h1 class="h3 mb-1">@pelicula.Titulo</h1>
-<p class="text-muted mb-3">
-    <span class="badge text-bg-secondary">@pelicula.Clasificacion.Texto()</span>
-    @f.FechaHora.ToString("dddd dd/MM, HH:mm") · @sala.Sede!.Nombre · @sala.Nombre ·
-    @f.Formato.Texto() · @f.Idioma.Texto()@(f.Subtitulada ? " subtitulada" : "") ·
-    <strong class="text-body">@f.Precio.ToString("C") por entrada</strong>
-</p>
+<h1>@pelicula.Titulo</h1>
+<dl class="datos">
+    <div><dt>Día</dt><dd class="text-capitalize">@f.FechaHora.ToString("dddd dd/MM")</dd></div>
+    <div><dt>Hora</dt><dd>@f.FechaHora.ToString("HH:mm")</dd></div>
+    <div><dt>Sala</dt><dd>@sala.Sede!.Nombre, @sala.Nombre</dd></div>
+    <div><dt>Versión</dt><dd>@f.Formato.Texto(), @f.Idioma.Texto().ToLower()@(f.Subtitulada ? " subtitulada" : "")</dd></div>
+    <div><dt>Clasificación</dt><dd><span class="clasificacion">@pelicula.Clasificacion.Texto()</span></dd></div>
+</dl>
 
 @if (bloqueada)
 {
@@ -25,7 +26,7 @@
 @if (!ViewData.ModelState.IsValid)
 {
     <div class="alert alert-danger" role="alert">
-        <ul class="mb-0">
+        <ul class="mb-0 ps-3">
             @foreach (var error in ViewData.ModelState.Values.SelectMany(v => v.Errors))
             {
                 <li>@error.ErrorMessage</li>
@@ -37,70 +38,119 @@
 <form asp-action="Nueva" asp-route-id="@f.Id" method="post" id="form-compra"
       data-precio="@f.Precio.ToString(System.Globalization.CultureInfo.InvariantCulture)"
       data-maximo="@Compra.MaximoEntradas">
-    <div class="sala-mapa mb-3" role="group" aria-label="Butacas de la @sala.Nombre">
-        <div class="pantalla">Pantalla</div>
-        @for (var fila = 1; fila <= sala.CantidadFilas; fila++)
-        {
-            <div class="fila-butacas">
-                <span class="nro-fila" aria-hidden="true">@fila</span>
-                @for (var butaca = 1; butaca <= sala.ButacasPorFila; butaca++)
-                {
-                    var ocupada = Model.Ocupadas.Contains((fila, butaca));
-                    var elegida = Model.Elegidas.Contains((fila, butaca));
-                    var idButaca = $"b-{fila}-{butaca}";
-                    var valor = $"{fila}-{butaca}";
-                    <input type="checkbox" class="btn-check butaca-check" id="@idButaca" name="butacas"
-                           value="@valor" autocomplete="off"
-                           disabled="@(ocupada || bloqueada)" checked="@elegida" />
-                    <label class="butaca @(ocupada ? "ocupada" : "")" for="@idButaca"
-                           title="Fila @fila, butaca @butaca@(ocupada ? " (vendida)" : "")">@butaca</label>
-                }
-            </div>
-        }
-    </div>
-
-    <div class="d-flex flex-wrap gap-3 small text-muted mb-3">
-        <span><span class="butaca muestra"></span> Libre</span>
-        <span><span class="butaca muestra elegida"></span> Elegida</span>
-        <span><span class="butaca muestra ocupada"></span> Vendida</span>
-    </div>
-
-    @if (!bloqueada)
-    {
-        <div class="d-flex flex-wrap align-items-center gap-3">
-            <p class="fs-5 mb-0">
-                Entradas: <strong id="cantidad">@Model.Elegidas.Count</strong> ·
-                Total: <strong id="total">@((Model.Elegidas.Count * f.Precio).ToString("C"))</strong>
-            </p>
-            <button type="submit" class="btn btn-primary btn-lg" id="btn-comprar">Comprar</button>
+    <div class="row g-4 align-items-start">
+        <div class="col-12 col-lg-8">
+            <section class="panel" aria-label="Butacas de la @sala.Nombre">
+                <div class="sala-mapa">
+                    <div class="sala-mapa-interior">
+                        <div class="pantalla" aria-hidden="true"></div>
+                        <div class="pantalla-texto">Pantalla</div>
+                        @for (var fila = 1; fila <= sala.CantidadFilas; fila++)
+                        {
+                            <div class="fila-butacas">
+                                <span class="nro-fila" aria-hidden="true">@fila</span>
+                                @for (var butaca = 1; butaca <= sala.ButacasPorFila; butaca++)
+                                {
+                                    var ocupada = Model.Ocupadas.Contains((fila, butaca));
+                                    var elegida = Model.Elegidas.Contains((fila, butaca));
+                                    var idButaca = $"b-{fila}-{butaca}";
+                                    var valor = $"{fila}-{butaca}";
+                                    var estado = ocupada ? "vendida" : "libre";
+                                    <input type="checkbox" class="btn-check butaca-check" id="@idButaca" name="butacas"
+                                           value="@valor" autocomplete="off" data-fila="@fila" data-butaca="@butaca"
+                                           disabled="@(ocupada || bloqueada)" checked="@elegida"
+                                           aria-label="Fila @fila, butaca @butaca, @estado" />
+                                    <label class="butaca @(ocupada ? "ocupada" : "")" for="@idButaca"
+                                           title="Fila @fila, butaca @butaca@(ocupada ? " (vendida)" : "")">@(ocupada ? "" : butaca.ToString())</label>
+                                }
+                                <span class="nro-fila" aria-hidden="true">@fila</span>
+                            </div>
+                        }
+                    </div>
+                </div>
+                <div class="leyenda">
+                    <span><span class="butaca muestra" aria-hidden="true"></span> Libre</span>
+                    <span><span class="butaca muestra elegida" aria-hidden="true"></span> Elegida</span>
+                    <span><span class="butaca muestra ocupada" aria-hidden="true"></span> Vendida</span>
+                </div>
+            </section>
         </div>
-        <p class="small text-muted mt-2" id="aviso-maximo">Podés elegir hasta @Compra.MaximoEntradas butacas.</p>
-    }
+
+        <div class="col-12 col-lg-4 resumen-compra">
+            <aside class="panel" aria-labelledby="titulo-seleccion">
+                <h2 id="titulo-seleccion" class="marquesina fs-2 mb-2">Tu selección</h2>
+                @if (bloqueada)
+                {
+                    <p class="text-muted mb-0">No se pueden comprar entradas para esta función.</p>
+                }
+                else
+                {
+                    <p class="text-muted mb-3" id="ayuda-seleccion">Tocá una butaca libre para elegirla. Podés llevar hasta @Compra.MaximoEntradas.</p>
+                    <ul class="list-unstyled d-none d-lg-flex flex-column gap-2 mb-3" id="lista-elegidas" aria-live="polite"></ul>
+                    <div class="seleccion-pie mb-3">
+                        <div class="d-flex justify-content-between align-items-baseline">
+                            <span class="fw-bold">Total</span>
+                            <span class="seleccion-total" id="total">@((Model.Elegidas.Count * f.Precio).ToString("C0"))</span>
+                        </div>
+                        <p class="small text-muted mt-1 mb-0" id="detalle">@Model.Elegidas.Count entradas de @f.Precio.ToString("C0")</p>
+                    </div>
+                    <button type="submit" class="btn btn-primary btn-lg w-100" id="btn-comprar">Comprar</button>
+                }
+            </aside>
+        </div>
+    </div>
 </form>
 
 @section Scripts {
     <script>
-        // Cuenta las butacas elegidas, actualiza el total y no deja pasar el máximo.
+        // Arma la lista de butacas elegidas, actualiza el total y no deja pasar el máximo.
         (function () {
             const form = document.getElementById('form-compra');
             const boton = document.getElementById('btn-comprar');
             if (!form || !boton) return;
             const precio = Number(form.dataset.precio);
             const maximo = Number(form.dataset.maximo);
-            const moneda = new Intl.NumberFormat('es-AR', { style: 'currency', currency: 'ARS' });
-            const aviso = document.getElementById('aviso-maximo');
+            const moneda = new Intl.NumberFormat('es-AR', { style: 'currency', currency: 'ARS', maximumFractionDigits: 0 });
+            const lista = document.getElementById('lista-elegidas');
+            const ayuda = document.getElementById('ayuda-seleccion');
+
+            function elegidas() {
+                return Array.from(form.querySelectorAll('.butaca-check:checked'));
+            }
 
             function actualizar() {
-                const cantidad = form.querySelectorAll('.butaca-check:checked').length;
-                document.getElementById('cantidad').textContent = cantidad;
+                const marcadas = elegidas();
+                const cantidad = marcadas.length;
+                const palabra = cantidad === 1 ? 'entrada' : 'entradas';
+
                 document.getElementById('total').textContent = moneda.format(cantidad * precio);
+                document.getElementById('detalle').textContent = cantidad + ' ' + palabra + ' de ' + moneda.format(precio);
+                boton.textContent = cantidad === 0 ? 'Elegí tus butacas' : 'Comprar ' + cantidad + ' ' + palabra;
                 boton.disabled = cantidad === 0;
-                aviso.classList.toggle('text-danger', cantidad >= maximo);
+                ayuda.hidden = cantidad > 0;
+
+                lista.replaceChildren(...marcadas.map(function (c) {
+                    const item = document.createElement('li');
+                    item.className = 'd-flex justify-content-between align-items-center gap-2 px-3 py-2 rounded-2';
+                    item.style.background = 'var(--papel)';
+                    const texto = document.createElement('span');
+                    texto.textContent = 'Fila ' + c.dataset.fila + ', butaca ' + c.dataset.butaca;
+                    const quitar = document.createElement('button');
+                    quitar.type = 'button';
+                    quitar.className = 'btn btn-link btn-sm p-0';
+                    quitar.textContent = 'Quitar';
+                    quitar.setAttribute('aria-label', 'Quitar ' + texto.textContent);
+                    quitar.addEventListener('click', function () {
+                        c.checked = false;
+                        actualizar();
+                    });
+                    item.append(texto, quitar);
+                    return item;
+                }));
             }
 
             form.addEventListener('change', function (e) {
-                if (e.target.matches('.butaca-check:checked')
-                    && form.querySelectorAll('.butaca-check:checked').length > maximo) {
+                if (e.target.matches('.butaca-check:checked') && elegidas().length > maximo) {
                     e.target.checked = false;
                 }
                 actualizar();

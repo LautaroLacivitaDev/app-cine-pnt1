@@ -1,6 +1,11 @@
 @model IEnumerable<Persona>
 
 <partial name="_Encabezado" />
+@if (!Model.Any())
+{
+    var mensaje = $"Todavía no hay {ViewData["Title"]?.ToString()?.ToLower()} cargados.";
+    <partial name="_Vacio" model="mensaje" />
+}
 <ul class="list-group">
     @foreach (var p in Model)
     {

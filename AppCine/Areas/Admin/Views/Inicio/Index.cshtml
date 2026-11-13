@@ -3,7 +3,7 @@
     (string Controlador, string Titulo, string Descripcion)[] secciones =
     [
         ("Peliculas", "Películas", "Con sus géneros y su reparto"),
-        ("Funciones", "Funciones", "Horarios por sala, con las reglas de negocio"),
+        ("Funciones", "Funciones", "Horarios por sala, con las reglas de negocio y las entradas vendidas"),
         ("Sedes", "Sedes", "Complejos de cines"),
         ("Salas", "Salas", "Salas de cada sede"),
         ("Actores", "Actores", "Personas que actúan"),
@@ -14,16 +14,14 @@
     ];
 }
 
-<h1 class="h3 mb-3">Administración</h1>
+<h1>Administración</h1>
 <div class="row g-3">
     @foreach (var s in secciones)
     {
         <div class="col-12 col-sm-6 col-lg-4">
-            <a asp-controller="@s.Controlador" asp-action="Index" class="card h-100 text-decoration-none">
-                <div class="card-body">
-                    <h2 class="h5 card-title">@s.Titulo</h2>
-                    <p class="card-text text-muted small mb-0">@s.Descripcion</p>
-                </div>
+            <a asp-controller="@s.Controlador" asp-action="Index" class="seccion-admin">
+                <h2 class="seccion-admin-titulo">@s.Titulo</h2>
+                <p class="text-muted small mb-0">@s.Descripcion</p>
             </a>
         </div>
     }

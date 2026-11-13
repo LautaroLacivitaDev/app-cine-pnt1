@@ -2,22 +2,26 @@
 @{
     ViewData["Title"] = "Cartelera";
     var hoy = DateTime.Today;
-    string NombreDia(DateTime d) => d == hoy ? "Hoy" : d == hoy.AddDays(1) ? "Mañana" : d.ToString("ddd dd/MM");
+    string NombreDia(DateTime d) => d == hoy ? "Hoy" : d == hoy.AddDays(1) ? "Mañana" : d.ToString("dddd");
 }
 
-<h1 class="h3 mb-3">Cartelera</h1>
+<h1>Cartelera</h1>
 
-<form method="get" asp-action="Index" class="mb-4">
+<nav class="dias mb-4" aria-label="Día">
+    @foreach (var d in Model.Dias)
+    {
+        <a class="dia" aria-current="@(d == Model.Fecha ? "date" : null)"
+           asp-action="Index" asp-route-fecha="@d.ToString("yyyy-MM-dd")" asp-route-sedeId="@Model.SedeId"
+           asp-route-generoId="@Model.GeneroId" asp-route-formato="@Model.Formato">
+            <span class="dia-nombre">@NombreDia(d)</span>
+            <span class="dia-fecha">@d.ToString("dd/MM")</span>
+        </a>
+    }
+</nav>
+
+<form method="get" asp-action="Index" class="filtros mb-5">
     <input type="hidden" name="fecha" value="@Model.Fecha.ToString("yyyy-MM-dd")" />
-    <div class="dias mb-3" role="group" aria-label="Día">
-        @foreach (var d in Model.Dias)
-        {
-            <a class="btn @(d == Model.Fecha ? "btn-dark" : "btn-outline-dark")"
-               asp-action="Index" asp-route-fecha="@d.ToString("yyyy-MM-dd")" asp-route-sedeId="@Model.SedeId"
-               asp-route-generoId="@Model.GeneroId" asp-route-formato="@Model.Formato">@NombreDia(d)</a>
-        }
-    </div>
-    <div class="row g-2">
+    <div class="row g-3 align-items-end">
         <div class="col-12 col-md-3">
             <label class="form-label" for="sedeId">Sede</label>
             <select class="form-select" id="sedeId" name="sedeId">
@@ -48,7 +52,7 @@
                 }
             </select>
         </div>
-        <div class="col-12 col-md-3 d-flex align-items-end">
+        <div class="col-12 col-md-3">
             <button type="submit" class="btn btn-primary w-100">Filtrar</button>
         </div>
     </div>
@@ -56,44 +60,50 @@
 
 @if (Model.Peliculas.Count == 0)
 {
-    <p class="text-muted">No hay funciones para @NombreDia(Model.Fecha).ToLower() con esos filtros.</p>
+    <div class="vacio">
+        <p class="mb-2">No hay funciones para @NombreDia(Model.Fecha).ToLower() con esos filtros.</p>
+        <a asp-action="Index" asp-route-fecha="@Model.Fecha.ToString("yyyy-MM-dd")">Ver todas las funciones de ese día</a>
+    </div>
 }
 
-<div class="row g-3">
+<div class="row g-4">
     @foreach (var item in Model.Peliculas)
     {
         var p = item.Pelicula;
-        <div class="col-12 col-lg-6">
-            <div class="card h-100">
-                <div class="card-body d-flex gap-3">
-                    <a asp-controller="Peliculas" asp-action="Detalle" asp-route-id="@p.Id" class="poster-chico">
-                        <img class="poster rounded" src="@p.ImagenUrl" alt="Póster de @p.Titulo" loading="lazy" />
-                    </a>
-                    <div class="flex-grow-1">
-                        <h2 class="h5 mb-1">
-                            <a asp-controller="Peliculas" asp-action="Detalle" asp-route-id="@p.Id" class="text-decoration-none">@p.Titulo</a>
-                        </h2>
-                        <p class="small text-muted mb-2">
-                            <span class="badge text-bg-secondary">@p.Clasificacion.Texto()</span>
-                            @p.DuracionMinutos min · @string.Join(", ", p.Generos.Select(g => g.Nombre))
-                        </p>
-                        @foreach (var sede in item.FuncionesPorSede)
-                        {
-                            <div class="mb-2">
-                                <div class="small fw-semibold">@sede.Key.Nombre</div>
-                                <div class="d-flex flex-wrap gap-1">
-                                    @foreach (var f in sede)
-                                    {
-                                        <a asp-controller="Compras" asp-action="Nueva" asp-route-id="@f.Id"
-                                           class="badge text-bg-light border horario fs-6 fw-normal text-decoration-none"
-                                           title="Comprar entradas · @f.Sala!.Nombre · @f.Idioma.Texto() · @f.Precio.ToString("C0")">@f.Etiqueta</a>
-                                    }
-                                </div>
-                            </div>
-                        }
+        <div class="col-12 col-xl-6">
+            <article class="pelicula">
+                <a asp-controller="Peliculas" asp-action="Detalle" asp-route-id="@p.Id" class="poster-chico" tabindex="-1" aria-hidden="true">
+                    <img class="poster" src="@p.ImagenUrl" alt="" loading="lazy" />
+                </a>
+                <div class="flex-grow-1" style="min-width: 0">
+                    <h2 class="pelicula-titulo">
+                        <a asp-controller="Peliculas" asp-action="Detalle" asp-route-id="@p.Id">@p.Titulo</a>
+                    </h2>
+                    <div class="pelicula-datos mb-3">
+                        <span class="clasificacion" title="Clasificación">@p.Clasificacion.Texto()</span>
+                        <span>@p.DuracionMinutos min</span>
+                        <span>@string.Join(", ", p.Generos.Select(g => g.Nombre))</span>
                     </div>
+                    @foreach (var sede in item.FuncionesPorSede)
+                    {
+                        <div class="mb-3">
+                            <div class="sede-nombre">@sede.Key.Nombre</div>
+                            <div class="d-flex flex-wrap gap-2">
+                                @foreach (var f in sede)
+                                {
+                                    var formato = f.Formato.Texto() + (f.Subtitulada ? " SUB" : "");
+                                    <a asp-controller="Compras" asp-action="Nueva" asp-route-id="@f.Id" class="entrada"
+                                       aria-label="Comprar entradas para las @f.FechaHora.ToString("HH:mm"), @formato, @f.Sala!.Nombre"
+                                       title="@f.Sala.Nombre, @f.Idioma.Texto(), @f.Precio.ToString("C0")">
+                                        <span class="entrada-hora">@f.FechaHora.ToString("HH:mm")</span>
+                                        <span class="entrada-formato">@formato</span>
+                                    </a>
+                                }
+                            </div>
+                        </div>
+                    }
                 </div>
-            </div>
+            </article>
         </div>
     }
 </div>

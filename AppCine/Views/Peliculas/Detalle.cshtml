@@ -3,43 +3,43 @@
     ViewData["Title"] = Model.Titulo;
     var funcionesPorSede = (List<IGrouping<Sede, Funcion>>)ViewBag.FuncionesPorSede;
     var hoy = DateTime.Today;
-    string NombreDia(DateTime d) => d.Date == hoy ? "Hoy" : d.Date == hoy.AddDays(1) ? "Mañana" : d.ToString("ddd dd/MM");
+    string NombreDia(DateTime d) => d.Date == hoy ? "Hoy" : d.Date == hoy.AddDays(1) ? "Mañana" : d.ToString("dddd dd/MM");
 }
 
-<a asp-controller="Home" asp-action="Index" class="btn btn-link px-0 mb-2">← Volver a la cartelera</a>
+<a asp-controller="Home" asp-action="Index" class="btn btn-link px-0 mb-2">Volver a la cartelera</a>
 
-<div class="row g-4">
+<div class="row g-4 g-lg-5">
     <div class="col-7 col-sm-5 col-md-4 col-lg-3 mx-auto mx-md-0">
-        <img class="poster rounded shadow-sm" src="@Model.ImagenUrl" alt="Póster de @Model.Titulo" />
+        <img class="poster shadow-sm" src="@Model.ImagenUrl" alt="Póster de @Model.Titulo" />
     </div>
     <div class="col-12 col-md-8 col-lg-9">
-        <h1 class="h3">@Model.Titulo</h1>
-        <p class="text-muted">
-            <span class="badge text-bg-secondary">@Model.Clasificacion.Texto()</span>
-            @Model.DuracionMinutos min · Estreno @Model.FechaEstreno.ToString("dd/MM/yyyy")
-        </p>
-        <p>@Model.Descripcion</p>
-        <dl class="row">
-            <dt class="col-sm-3">Director</dt>
-            <dd class="col-sm-9">@Model.Director?.NombreCompleto</dd>
-            <dt class="col-sm-3">Géneros</dt>
-            <dd class="col-sm-9">@string.Join(", ", Model.Generos.Select(g => g.Nombre))</dd>
-            <dt class="col-sm-3">Distribuidora</dt>
-            <dd class="col-sm-9">@Model.Distribuidora?.RazonSocial</dd>
+        <h1>@Model.Titulo</h1>
+        <dl class="datos">
+            <div><dt>Clasificación</dt><dd><span class="clasificacion">@Model.Clasificacion.Texto()</span></dd></div>
+            <div><dt>Duración</dt><dd>@Model.DuracionMinutos min</dd></div>
+            <div><dt>Estreno</dt><dd>@Model.FechaEstreno.ToString("dd/MM/yyyy")</dd></div>
+            <div><dt>Director</dt><dd>@Model.Director?.NombreCompleto</dd></div>
+            <div><dt>Géneros</dt><dd>@string.Join(", ", Model.Generos.Select(g => g.Nombre))</dd></div>
+            <div><dt>Distribuidora</dt><dd>@Model.Distribuidora?.RazonSocial</dd></div>
         </dl>
+
+        @if (!string.IsNullOrEmpty(Model.Descripcion))
+        {
+            <p class="fs-5" style="max-width: 42rem">@Model.Descripcion</p>
+        }
         @if (!string.IsNullOrEmpty(Model.TrailerUrl))
         {
-            <a class="btn btn-danger mb-3" href="@Model.TrailerUrl" target="_blank" rel="noopener">▶ Ver tráiler</a>
+            <a class="btn btn-outline-dark mb-4" href="@Model.TrailerUrl" target="_blank" rel="noopener">Ver tráiler en YouTube</a>
         }
 
-        <h2 class="h5 mt-3">Reparto</h2>
+        <h2 class="h4 fw-bold mt-2">Reparto</h2>
         @if (Model.Repartos.Count == 0)
         {
             <p class="text-muted">Sin reparto cargado.</p>
         }
         else
         {
-            <ul class="list-unstyled">
+            <ul class="list-unstyled mb-4">
                 @foreach (var r in Model.Repartos.OrderBy(r => r.Id))
                 {
                     <li><strong>@r.Actor!.NombreCompleto</strong> <span class="text-muted">como @r.Personaje</span></li>
@@ -47,30 +47,33 @@
             </ul>
         }
 
-        <h2 class="h5 mt-4">Horarios de la semana</h2>
+        <h2 class="h4 fw-bold mt-4">Horarios de la semana</h2>
+        <p class="text-muted">Elegí un horario para ver las butacas libres.</p>
         @if (funcionesPorSede.Count == 0)
         {
-            <p class="text-muted">No hay funciones programadas.</p>
+            <div class="vacio">No hay funciones programadas para esta semana.</div>
         }
         @foreach (var sede in funcionesPorSede)
         {
-            <div class="card mb-3">
-                <div class="card-header fw-semibold">@sede.Key.Nombre <span class="fw-normal text-muted small">· @sede.Key.Direccion</span></div>
-                <ul class="list-group list-group-flush">
-                    @foreach (var dia in sede.GroupBy(f => f.FechaHora.Date))
-                    {
-                        <li class="list-group-item d-flex flex-wrap align-items-center gap-1">
-                            <span class="me-2" style="min-width: 6rem">@NombreDia(dia.Key)</span>
-                            @foreach (var f in dia)
-                            {
-                                <a asp-controller="Compras" asp-action="Nueva" asp-route-id="@f.Id"
-                                   class="badge text-bg-light border horario fs-6 fw-normal text-nowrap text-decoration-none"
-                                   title="Comprar entradas · @f.Sala!.Nombre · @f.Precio.ToString("C0")">@f.Etiqueta</a>
-                            }
-                        </li>
-                    }
-                </ul>
-            </div>
+            <section class="panel mb-3" aria-label="@sede.Key.Nombre">
+                <h3 class="h6 fw-bold mb-3">@sede.Key.Nombre<span class="fw-normal text-muted">, @sede.Key.Direccion</span></h3>
+                @foreach (var dia in sede.GroupBy(f => f.FechaHora.Date))
+                {
+                    <div class="d-flex flex-wrap align-items-center gap-2 mb-2">
+                        <span class="fw-bold text-capitalize" style="min-width: 8.5rem">@NombreDia(dia.Key)</span>
+                        @foreach (var f in dia)
+                        {
+                            var formato = f.Formato.Texto() + (f.Subtitulada ? " SUB" : "");
+                            <a asp-controller="Compras" asp-action="Nueva" asp-route-id="@f.Id" class="entrada"
+                               aria-label="Comprar entradas para @NombreDia(dia.Key) a las @f.FechaHora.ToString("HH:mm"), @formato, @f.Sala!.Nombre"
+                               title="@f.Sala.Nombre, @f.Precio.ToString("C0")">
+                                <span class="entrada-hora">@f.FechaHora.ToString("HH:mm")</span>
+                                <span class="entrada-formato">@formato</span>
+                            </a>
+                        }
+                    </div>
+                }
+            </section>
         }
     </div>
 </div>
